@@ -1,5 +1,6 @@
 # NHCR - EMR Mediator
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/e1c4d7781b074e7a8791a4fcf7b3130c)](https://app.codacy.com/gh/SoftmedTanzania/emr-mediator-nhcr?utm_source=github.com&utm_medium=referral&utm_content=SoftmedTanzania/emr-mediator-nhcr&utm_campaign=Badge_Grade_Settings)
 [![Java CI Badge](https://github.com/SoftmedTanzania/emr-mediator-nhcr/workflows/Java%20CI%20with%20Maven/badge.svg)](https://github.com/SoftmedTanzania/emr-mediator-nhcr/actions?query=workflow%3A%22Java+CI+with+Maven%22)
 [![Coverage Status](https://coveralls.io/repos/github/SoftmedTanzania/emr-mediator-nhcr/badge.svg?branch=development)](https://coveralls.io/github/SoftmedTanzania/emr-mediator-nhcr?branch=development)
 
