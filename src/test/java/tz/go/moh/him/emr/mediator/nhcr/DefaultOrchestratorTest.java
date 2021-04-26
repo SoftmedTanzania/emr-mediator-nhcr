@@ -4,80 +4,129 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.testkit.JavaTestKit;
-import java.util.Collections;
-import org.apache.commons.lang3.tuple.Pair;
-import org.junit.*;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.openhim.mediator.engine.MediatorConfig;
 import org.openhim.mediator.engine.messages.FinishRequest;
-import org.openhim.mediator.engine.messages.MediatorHTTPRequest;
+import org.openhim.mediator.engine.messages.MediatorSocketRequest;
+import org.openhim.mediator.engine.testing.TestingUtils;
+import tz.go.moh.him.emr.mediator.nhcr.orchestrator.DefaultOrchestrator;
 
-import static org.junit.Assert.*;
+import java.io.File;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Properties;
+import java.util.UUID;
 
 public class DefaultOrchestratorTest {
 
-    static ActorSystem system;
+    /**
+     * The configuration.
+     */
+    private static MediatorConfig configuration;
 
-    @BeforeClass
-    public static void setup() {
-        system = ActorSystem.create();
-    }
+    /**
+     * The actor system.
+     */
+    private static ActorSystem system;
 
+    /**
+     * Runs cleanup after class execution.
+     */
     @AfterClass
-    public static void teardown() {
+    public static void afterClass() {
+        TestingUtils.clearRootContext(system, configuration.getName());
         JavaTestKit.shutdownActorSystem(system);
         system = null;
     }
 
-    @Before
-    public void setUp() throws Exception {
+    /**
+     * Runs initialization before each class execution.
+     */
+    @BeforeClass
+    public static void beforeClass() {
+        try {
+            configuration = loadConfig(null);
+            system = ActorSystem.create();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    @After
-    public void tearDown() throws Exception {
+    /**
+     * Loads the mediator configuration.
+     *
+     * @param configPath The configuration path.
+     * @return Returns the mediator configuration.
+     */
+    public static MediatorConfig loadConfig(String configPath) {
+        MediatorConfig config = new MediatorConfig();
+
+        try {
+            if (configPath != null) {
+                Properties props = new Properties();
+                File conf = new File(configPath);
+                InputStream in = FileUtils.openInputStream(conf);
+                props.load(in);
+                IOUtils.closeQuietly(in);
+
+                config.setProperties(props);
+            } else {
+                config.setProperties("mediator.properties");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        config.setName(config.getProperty("mediator.name"));
+        config.setServerHost(config.getProperty("mediator.host"));
+        config.setServerPort(Integer.parseInt(config.getProperty("mediator.port")));
+        config.setRootTimeout(Integer.parseInt(config.getProperty("mediator.timeout")));
+
+        config.setCoreHost(config.getProperty("core.host"));
+        config.setCoreAPIUsername(config.getProperty("core.api.user"));
+        config.setCoreAPIPassword(config.getProperty("core.api.password"));
+
+        config.setCoreAPIPort(Integer.parseInt(config.getProperty("core.api.port")));
+        config.setHeartbeatsEnabled(true);
+
+        return config;
     }
 
     @Test
-    public void testMediatorHTTPRequest() throws Exception {
+    public void testMediatorSocketRequest() throws Exception {
         new JavaTestKit(system) {{
             final MediatorConfig testConfig = new MediatorConfig("emr-mediator-nhcr", "localhost", 3026);
             final ActorRef defaultOrchestrator = system.actorOf(Props.create(DefaultOrchestrator.class, testConfig));
 
-            MediatorHTTPRequest POST_Request = new MediatorHTTPRequest(
+            MediatorSocketRequest request = new MediatorSocketRequest(
                     getRef(),
                     getRef(),
                     "unit-test",
-                    "POST",
-                    "http",
+                    UUID.randomUUID().toString(),
                     null,
                     null,
-                    "/emr",
-                    "test message",
-                    Collections.<String, String>singletonMap("Content-Type", "text/plain"),
-                    Collections.<Pair<String, String>>emptyList()
+                    null,
+                    false
             );
 
-            defaultOrchestrator.tell(POST_Request, getRef());
+            defaultOrchestrator.tell(request, getRef());
 
-            final Object[] out =
-                    new ReceiveWhile<Object>(Object.class, duration("1 second")) {
-                        @Override
-                        protected Object match(Object msg) throws Exception {
-                            if (msg instanceof FinishRequest) {
-                                return msg;
-                            }
-                            throw noMatch();
-                        }
-                    }.get();
-
-            boolean foundResponse = false;
-
-            for (Object o : out) {
-                if (o instanceof FinishRequest) {
-                    foundResponse = true;
+            final Object[] out = new ReceiveWhile<Object>(Object.class, duration("3 seconds")) {
+                @Override
+                protected Object match(Object msg) {
+                    if (msg instanceof FinishRequest) {
+                        return msg;
+                    }
+                    throw noMatch();
                 }
-            }
+            }.get();
 
-            assertTrue("Must send FinishRequest", foundResponse);
+            Assert.assertTrue(Arrays.stream(out).anyMatch(c -> c instanceof FinishRequest));
         }};
     }
 }
