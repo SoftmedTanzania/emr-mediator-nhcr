@@ -28,14 +28,9 @@ public class MediatorMain {
      * Builds the routing table.
      *
      * @return Returns the routing table.
-     * @throws RoutingTable.RouteAlreadyMappedException if the route is already mapped
      */
-    private static RoutingTable buildRoutingTable() throws RoutingTable.RouteAlreadyMappedException {
-        RoutingTable routingTable = new RoutingTable();
-
-        routingTable.addRoute("/nhcr-emr", DefaultOrchestrator.class);
-
-        return routingTable;
+    private static RoutingTable buildRoutingTable() {
+        return new RoutingTable();
     }
 
     /**
@@ -44,7 +39,12 @@ public class MediatorMain {
      * @return Returns the startup actors configuration.
      */
     private static StartupActorsConfig buildStartupActorsConfig() {
-        return new StartupActorsConfig();
+
+        StartupActorsConfig startupActorsConfig = new StartupActorsConfig();
+
+        startupActorsConfig.addActor("default", DefaultOrchestrator.class);
+
+        return startupActorsConfig;
     }
 
     /**
@@ -52,10 +52,9 @@ public class MediatorMain {
      *
      * @param configPath The path of the configuration.
      * @return Returns the configuration instance.
-     * @throws IOException                              if an IO exception occurs
-     * @throws RoutingTable.RouteAlreadyMappedException if the route is already mapped
+     * @throws IOException if an IO exception occurs
      */
-    private static MediatorConfig loadConfig(String configPath) throws IOException, RoutingTable.RouteAlreadyMappedException {
+    private static MediatorConfig loadConfig(String configPath) throws IOException {
         MediatorConfig config = new MediatorConfig();
 
         if (configPath != null) {

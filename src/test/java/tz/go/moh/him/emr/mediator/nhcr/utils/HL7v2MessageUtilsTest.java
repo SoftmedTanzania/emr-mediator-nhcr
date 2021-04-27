@@ -14,12 +14,8 @@ import java.io.InputStream;
 public class HL7v2MessageUtilsTest {
 
     @Test
-    public void testParseZxtA39() throws IOException, HL7Exception {
-        InputStream stream = HL7v2MessageUtilsTest.class.getClassLoader().getResourceAsStream("ZXT_A40.hl7");
-
-        Assert.assertNotNull(stream);
-
-        String message = IOUtils.toString(stream);
+    public void testConvertToEmrMessage() throws IOException, HL7Exception {
+        String message = TestUtils.getHL7TestMessage();
 
         ZXT_A39 a39 = HL7v2MessageBuilderUtils.parseZxtA39(message);
 
@@ -36,4 +32,22 @@ public class HL7v2MessageUtilsTest {
         System.out.println(serializer.serializeToString(actual));
     }
 
+    /**
+     * Test the parsing of an ZXT_A39 message.
+     *
+     * @throws IOException  if an IO exception occurs
+     * @throws HL7Exception if an HL7 exception occurs
+     */
+    @Test
+    public void testParseZxtA39() throws IOException, HL7Exception {
+        String message = TestUtils.getHL7TestMessage();
+
+        ZXT_A39 a39 = HL7v2MessageBuilderUtils.parseZxtA39(message);
+
+        Assert.assertEquals("https://pos1.com", a39.getSFT().getSft1_SoftwareVendorOrganization().getOrganizationName().getValue());
+        Assert.assertEquals("username", a39.getSFT().getSft3_SoftwareProductName().getValue());
+        Assert.assertEquals("password", a39.getSFT().getSft5_SoftwareProductInformation().getValue());
+
+        Assert.assertNotNull(a39);
+    }
 }

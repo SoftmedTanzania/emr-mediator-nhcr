@@ -6,21 +6,19 @@ import akka.actor.Props;
 import akka.testkit.JavaTestKit;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.openhim.mediator.engine.MediatorConfig;
 import org.openhim.mediator.engine.messages.FinishRequest;
 import org.openhim.mediator.engine.messages.MediatorSocketRequest;
+import org.openhim.mediator.engine.testing.MockLauncher;
 import org.openhim.mediator.engine.testing.TestingUtils;
+import tz.go.moh.him.emr.mediator.nhcr.mock.MockDestination;
 import tz.go.moh.him.emr.mediator.nhcr.orchestrator.DefaultOrchestrator;
+import tz.go.moh.him.emr.mediator.nhcr.utils.TestUtils;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Properties;
-import java.util.UUID;
+import java.util.*;
 
 public class DefaultOrchestratorTest {
 
@@ -33,6 +31,26 @@ public class DefaultOrchestratorTest {
      * The actor system.
      */
     private static ActorSystem system;
+
+    /**
+     * Runs cleanup after each test execution.
+     */
+    @After
+    public void after() {
+        system = ActorSystem.create();
+    }
+
+    /**
+     * Runs initialization before each test execution.
+     */
+    @Before
+    public void before() {
+        List<MockLauncher.ActorToLaunch> actorsToLaunch = new LinkedList<>();
+
+        actorsToLaunch.add(new MockLauncher.ActorToLaunch("mllp-connector", MockDestination.class));
+
+        TestingUtils.launchActors(system, configuration.getName(), actorsToLaunch);
+    }
 
     /**
      * Runs cleanup after class execution.
@@ -110,7 +128,7 @@ public class DefaultOrchestratorTest {
                     UUID.randomUUID().toString(),
                     null,
                     null,
-                    null,
+                    TestUtils.getHL7TestMessage(),
                     false
             );
 

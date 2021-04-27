@@ -9,6 +9,9 @@ import tz.go.moh.him.emr.mediator.nhcr.hl7v2.v25.segment.ZXT;
 
 import java.util.Arrays;
 
+/**
+ * Represents an HL7v2 message which is a derivative of ADT_A39, representing a patient merge.
+ */
 public class ZXT_A39 extends ADT_A39 {
     /**
      * The constructor
@@ -37,9 +40,7 @@ public class ZXT_A39 extends ADT_A39 {
         // Put the ZXT segment right after the ADT_A40_PIDPD1MRGPV1 segment
         int index = indexOfPidPd1MrgPv1 + 1;
 
-        Class<ZXT> type = ZXT.class;
-
-        this.add(type, false, false, index);
+        this.add(ZXT.class, false, false, index);
         this.add(IN1.class, false, false, index);
     }
 

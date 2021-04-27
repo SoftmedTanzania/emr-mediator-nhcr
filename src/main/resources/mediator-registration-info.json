@@ -8,23 +8,20 @@
       "name": "EMR Mediator NHCR Route",
       "host": "localhost",
       "port": "3026",
-      "path": "/emr",
-      "type": "http"
+      "type": "tcp"
     }
   ],
   "defaultChannelConfig": [
     {
       "name": "EMR Mediator NHCR",
-      "urlPattern": "^/emr$",
-      "type": "http",
-      "allow": ["emrmediatornhcr"],
+      "type": "tcp",
+      "allow": ["emr-mediator-nhcr"],
       "routes": [
         {
           "name": "EMR Mediator NHCR Route",
           "host": "localhost",
           "port": "3026",
-          "path": "/emr",
-          "type": "http",
+          "type": "tcp",
           "primary": "true"
         }
       ]

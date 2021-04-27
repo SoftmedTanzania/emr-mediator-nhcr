@@ -1,13 +1,13 @@
 package tz.go.moh.him.emr.mediator.nhcr.mock;
 
-import akka.actor.UntypedActor;
+import org.openhim.mediator.engine.connectors.MLLPConnector;
 import org.openhim.mediator.engine.messages.MediatorSocketRequest;
 import org.openhim.mediator.engine.messages.MediatorSocketResponse;
 
 /**
  * Represents a mock socket connector.
  */
-public abstract class MockSocketConnector extends UntypedActor {
+public abstract class MockSocketConnector extends MLLPConnector {
 
     /**
      * The mock response.
@@ -27,7 +27,7 @@ public abstract class MockSocketConnector extends UntypedActor {
      * @param message The message.
      */
     @Override
-    public void onReceive(Object message) throws Exception {
+    public void onReceive(Object message) {
         if (message instanceof MediatorSocketRequest) {
             executeOnReceive((MediatorSocketRequest) message);
 
