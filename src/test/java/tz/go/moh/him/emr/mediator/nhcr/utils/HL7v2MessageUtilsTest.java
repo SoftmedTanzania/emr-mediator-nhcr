@@ -3,7 +3,7 @@ package tz.go.moh.him.emr.mediator.nhcr.utils;
 import ca.uhn.hl7v2.HL7Exception;
 import org.junit.Assert;
 import org.junit.Test;
-import tz.go.moh.him.emr.mediator.nhcr.domain.EmrMessage;
+import tz.go.moh.him.emr.mediator.nhcr.domain.EmrRequest;
 import tz.go.moh.him.emr.mediator.nhcr.hl7v2.v25.message.ZXT_A39;
 import tz.go.moh.him.mediator.core.serialization.JsonSerializer;
 
@@ -25,7 +25,7 @@ public class HL7v2MessageUtilsTest {
 
         JsonSerializer serializer = new JsonSerializer();
 
-        EmrMessage actual = HL7v2MessageBuilderUtils.convertToEmrMessage(a39);
+        EmrRequest actual = HL7v2MessageBuilderUtils.convertToEmrMessage(a39);
 
         System.out.println(serializer.serializeToString(actual));
     }

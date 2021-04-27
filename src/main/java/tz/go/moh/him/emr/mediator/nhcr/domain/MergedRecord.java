@@ -25,7 +25,8 @@ public class MergedRecord {
      * @param medicalRecordNumber The medical record number.
      */
     public MergedRecord(String medicalRecordNumber) {
-        this.medicalRecordNumber = medicalRecordNumber;
+        this();
+        this.setMedicalRecordNumber(medicalRecordNumber);
     }
 
     /**

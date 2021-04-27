@@ -32,6 +32,7 @@ public class PatientId {
      * @param id   The id value.
      */
     public PatientId(String type, String id) {
+        this();
         this.type = type;
         this.id = id;
     }

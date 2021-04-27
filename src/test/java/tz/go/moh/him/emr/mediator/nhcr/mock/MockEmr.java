@@ -1,10 +1,14 @@
 package tz.go.moh.him.emr.mediator.nhcr.mock;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.openhim.mediator.engine.messages.MediatorHTTPRequest;
 import org.openhim.mediator.engine.testing.MockHTTPConnector;
+import tz.go.moh.him.emr.mediator.nhcr.domain.EmrResponse;
 import tz.go.moh.him.emr.mediator.nhcr.orchestrator.DefaultOrchestratorTest;
+import tz.go.moh.him.mediator.core.serialization.JsonSerializer;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +31,15 @@ public class MockEmr extends MockHTTPConnector {
      */
     @Override
     public String getResponse() {
-        return null;
+        InputStream stream = MockEmr.class.getClassLoader().getResourceAsStream("emr_response_success.json");
+
+        Assert.assertNotNull(stream);
+
+        try {
+            return IOUtils.toString(stream);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -62,9 +74,18 @@ public class MockEmr extends MockHTTPConnector {
     @Override
     public void executeOnReceive(MediatorHTTPRequest msg) {
 
-        InputStream stream = DefaultOrchestratorTest.class.getClassLoader().getResourceAsStream("success_response.json");
+        InputStream stream = DefaultOrchestratorTest.class.getClassLoader().getResourceAsStream("emr_response_success.json");
 
         Assert.assertNotNull(stream);
+
+        JsonSerializer serializer = new JsonSerializer();
+        try {
+            EmrResponse response = serializer.deserialize(IOUtils.toString(stream), EmrResponse.class);
+
+            Assert.assertEquals("Success", response.getStatus());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
 

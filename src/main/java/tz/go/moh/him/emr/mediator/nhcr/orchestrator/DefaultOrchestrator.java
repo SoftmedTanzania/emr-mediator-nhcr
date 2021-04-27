@@ -7,6 +7,7 @@ import ca.uhn.hl7v2.DefaultHapiContext;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.v25.message.ACK;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpHeaders;
 import org.openhim.mediator.engine.MediatorConfig;
@@ -14,7 +15,7 @@ import org.openhim.mediator.engine.connectors.MLLPConnector;
 import org.openhim.mediator.engine.messages.MediatorHTTPRequest;
 import org.openhim.mediator.engine.messages.MediatorHTTPResponse;
 import org.openhim.mediator.engine.messages.MediatorSocketRequest;
-import tz.go.moh.him.emr.mediator.nhcr.domain.EmrMessage;
+import tz.go.moh.him.emr.mediator.nhcr.domain.EmrRequest;
 import tz.go.moh.him.emr.mediator.nhcr.hl7v2.v25.message.ZXT_A39;
 import tz.go.moh.him.emr.mediator.nhcr.utils.HL7v2MessageBuilderUtils;
 import tz.go.moh.him.emr.mediator.nhcr.utils.MllpUtils;
@@ -66,9 +67,15 @@ public class DefaultOrchestrator extends MLLPConnector {
 
             workingRequest = (MediatorSocketRequest) msg;
 
+            log.info("Received socket request: Correlation Id: " + workingRequest.getCorrelationId() + ", Host:" + workingRequest.getHost() + ", Port: " + workingRequest.getPort() + ", Secure: " + workingRequest.isSecure());
+
             handleSocketRequest(workingRequest);
         } else if (msg instanceof MediatorHTTPResponse) {
-            this.handleHttpResponse((MediatorHTTPResponse) msg);
+
+            MediatorHTTPResponse response = (MediatorHTTPResponse) msg;
+
+            log.info("Received HTTP response: Status Code " + response.getStatusCode() + ", correlates to request: " + response.getOriginalRequest().getCorrelationId());
+            this.handleHttpResponse(response);
         } else {
             unhandled(msg);
         }
@@ -96,7 +103,7 @@ public class DefaultOrchestrator extends MLLPConnector {
             JsonSerializer serializer = new JsonSerializer();
 
             // build the EMR message
-            EmrMessage emrMessage = HL7v2MessageBuilderUtils.convertToEmrMessage(a40);
+            EmrRequest emrRequest = HL7v2MessageBuilderUtils.convertToEmrMessage(a40);
 
             String url = a40.getSFT(0).getSft1_SoftwareVendorOrganization().getXon1_OrganizationName().getValue();
             String username = a40.getSFT(0).getSft3_SoftwareProductName().getValue();
@@ -110,7 +117,7 @@ public class DefaultOrchestrator extends MLLPConnector {
 
 //            host = scheme + "://" + host + ":" + port + path;
 
-            MediatorHTTPRequest requestToEmr = new MediatorHTTPRequest(workingRequest.getRequestHandler(), getSelf(), url, "POST", url, serializer.serializeToString(emrMessage), headers, parameters);
+            MediatorHTTPRequest requestToEmr = new MediatorHTTPRequest(workingRequest.getRequestHandler(), getSelf(), url, "POST", url, serializer.serializeToString(emrRequest), headers, parameters);
 
             ActorSelection httpConnector = getContext().actorSelection(config.userPathFor("http-connector"));
             httpConnector.tell(requestToEmr, getSelf());
@@ -121,6 +128,8 @@ public class DefaultOrchestrator extends MLLPConnector {
             ACK ack = HL7v2MessageBuilderUtils.createAck(UUID.randomUUID().toString(), false);
 
             MllpUtils.sendMessage(ack, config, new DefaultHapiContext(), null);
+
+            log.error("Unable to process incoming request: %s", ExceptionUtils.getStackTrace(e));
         }
     }
 
@@ -146,6 +155,7 @@ public class DefaultOrchestrator extends MLLPConnector {
             // in the event of an exception, we need to create a generic ACK
             // and respond to the NHCR, indicating a failure
             ack = HL7v2MessageBuilderUtils.createAck(UUID.randomUUID().toString(), success);
+            log.error("Unable to process incoming response: " + ExceptionUtils.getStackTrace(e));
         } finally {
             MllpUtils.sendMessage(ack, config, new DefaultHapiContext(), null);
             workingRequest.getRequestHandler().tell(response.toFinishRequest(), getSelf());

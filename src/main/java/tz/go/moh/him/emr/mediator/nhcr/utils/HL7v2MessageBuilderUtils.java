@@ -29,18 +29,18 @@ public class HL7v2MessageBuilderUtils {
     private static final String RITA_ID = "RITA_ID";
 
     /**
-     * Converts an {@link ZXT_A39} instance to an {@link EmrMessage} instance.
+     * Converts an {@link ZXT_A39} instance to an {@link EmrRequest} instance.
      *
      * @param a40 The HL7v2 message.
-     * @return Returns the converted {@link EmrMessage}.
+     * @return Returns the converted {@link EmrRequest}.
      */
-    public static EmrMessage convertToEmrMessage(ZXT_A39 a40) throws HL7Exception {
-        EmrMessage emrMessage = new EmrMessage();
+    public static EmrRequest convertToEmrMessage(ZXT_A39 a40) throws HL7Exception {
+        EmrRequest emrRequest = new EmrRequest();
 
         // assume PUT
         // since we are trying to notify the source system that a patient has been merged
         // hence UPDATE
-        emrMessage.setPostOrUpdate("U");
+        emrRequest.setPostOrUpdate("U");
 
         int reps = a40.getPATIENTReps();
 
@@ -60,11 +60,11 @@ public class HL7v2MessageBuilderUtils {
             for (int k = 0; k < mrg.getMrg1_PriorPatientIdentifierListReps(); k++) {
                 String value = mrg.getMrg1_PriorPatientIdentifierList(k).getCx1_IDNumber().getValue();
                 mergeIds.add(value);
-                emrMessage.getMergedRecords().add(new MergedRecord(value));
+                emrRequest.getMergedRecords().add(new MergedRecord(value));
             }
 
             // set the MRN, we assume the first id in the merge segment is the ID of the surviving record
-            emrMessage.setMedicalRecordNumber(mrg.getMrg1_PriorPatientIdentifierList(0).getCx1_IDNumber().getValue());
+            emrRequest.setMedicalRecordNumber(mrg.getMrg1_PriorPatientIdentifierList(0).getCx1_IDNumber().getValue());
 
             // Identifiers
             int ids = pid.getPatientIdentifierListReps();
@@ -88,19 +88,19 @@ public class HL7v2MessageBuilderUtils {
                     programs.add(program);
                 }
 
-                emrMessage.setProgramIds(programs);
+                emrRequest.setProgramIds(programs);
             }
 
             // Name
             if (pid.getPatientName(0) != null) {
-                emrMessage.setFirstName(pid.getPatientName(0).getGivenName().getValue());
-                emrMessage.setMiddleName(pid.getPatientName(0).getSecondAndFurtherGivenNamesOrInitialsThereof().getValue());
-                emrMessage.setLastName(pid.getPatientName(0).getFamilyName().getSurname().getValue());
+                emrRequest.setFirstName(pid.getPatientName(0).getGivenName().getValue());
+                emrRequest.setMiddleName(pid.getPatientName(0).getSecondAndFurtherGivenNamesOrInitialsThereof().getValue());
+                emrRequest.setLastName(pid.getPatientName(0).getFamilyName().getSurname().getValue());
             }
 
             // Sex
             if (pid.getAdministrativeSex() != null) {
-                emrMessage.setSex(pid.getAdministrativeSex().getValue());
+                emrRequest.setSex(pid.getAdministrativeSex().getValue());
             }
 
             // Address
@@ -116,34 +116,34 @@ public class HL7v2MessageBuilderUtils {
                     address.setVillage(designation[2]);
                 }
 
-                emrMessage.setPermanentAddress(address);
+                emrRequest.setPermanentAddress(address);
             }
 
             // Date of Birth
             if (pid.getDateTimeOfBirth() != null) {
-                emrMessage.setDateOfBirth(pid.getDateTimeOfBirth().getTime().getValue());
+                emrRequest.setDateOfBirth(pid.getDateTimeOfBirth().getTime().getValue());
             }
 
             // set the uln
-            emrMessage.setUniversalLifetimeNumber(pid.getSSNNumberPatient().getValue());
+            emrRequest.setUniversalLifetimeNumber(pid.getSSNNumberPatient().getValue());
 
             // set the other name
             if (pid.getPatientAlias(0) != null) {
-                emrMessage.setOtherName(pid.getPatientAlias(0).getGivenName().getValue());
+                emrRequest.setOtherName(pid.getPatientAlias(0).getGivenName().getValue());
             }
 
 
             // set the national id
-            emrMessage.getIds().addAll(Arrays.stream(pid.getCitizenship()).map(c -> new PatientId(NATIONAL_ID, c.getIdentifier().getValue())).collect(Collectors.toList()));
+            emrRequest.getIds().addAll(Arrays.stream(pid.getCitizenship()).map(c -> new PatientId(NATIONAL_ID, c.getIdentifier().getValue())).collect(Collectors.toList()));
 
             // set the voters id
-            emrMessage.getIds().add(new PatientId(VOTERS_ID, a40.getZXT().getVotersId().getValue()));
+            emrRequest.getIds().add(new PatientId(VOTERS_ID, a40.getZXT().getVotersId().getValue()));
 
             // set the drivers license id
-            emrMessage.getIds().add(new PatientId(DRIVERS_LICENSE_ID, pid.getDriverSLicenseNumberPatient().getDln1_LicenseNumber().getValue()));
+            emrRequest.getIds().add(new PatientId(DRIVERS_LICENSE_ID, pid.getDriverSLicenseNumberPatient().getDln1_LicenseNumber().getValue()));
 
             // set the rita id
-            emrMessage.getIds().add(new PatientId(RITA_ID, a40.getZXT().getRitaId().getId().getValue()));
+            emrRequest.getIds().add(new PatientId(RITA_ID, a40.getZXT().getRitaId().getId().getValue()));
 
             // set the insurance id
             InsuranceId insuranceId = new InsuranceId();
@@ -154,10 +154,10 @@ public class HL7v2MessageBuilderUtils {
                 insuranceId.setName(a40.getIN1().getIn14_InsuranceCompanyName(0).getOrganizationName().getValue());
             }
 
-            emrMessage.setInsuranceId(insuranceId);
+            emrRequest.setInsuranceId(insuranceId);
         }
 
-        return emrMessage;
+        return emrRequest;
     }
 
     /**

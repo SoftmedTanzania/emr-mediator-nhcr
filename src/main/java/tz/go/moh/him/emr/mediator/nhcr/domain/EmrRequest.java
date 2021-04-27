@@ -8,13 +8,16 @@ import java.util.List;
 /**
  * Represents an EMR message.
  */
-public class EmrMessage {
+public class EmrRequest {
 
     @JsonProperty("countryCode")
     private String countryCode;
 
     @JsonProperty("dob")
     private String dateOfBirth;
+
+    @JsonProperty("familyLinkages")
+    private Linkage familyLinkage;
 
     @JsonProperty("firstName")
     private String firstName;
@@ -36,6 +39,9 @@ public class EmrMessage {
 
     @JsonProperty("middleName")
     private String middleName;
+
+    @JsonProperty("otherLinkages")
+    private Linkage otherLinkages;
 
     @JsonProperty("otherName")
     private String otherName;
@@ -67,10 +73,26 @@ public class EmrMessage {
     @JsonProperty("uln")
     private String universalLifetimeNumber;
 
-    public EmrMessage() {
+    public EmrRequest() {
         setIds(new ArrayList<>());
         setProgramIds(new ArrayList<>());
         setMergedRecords(new ArrayList<>());
+    }
+
+    public Linkage getFamilyLinkage() {
+        return familyLinkage;
+    }
+
+    public void setFamilyLinkage(Linkage familyLinkage) {
+        this.familyLinkage = familyLinkage;
+    }
+
+    public Linkage getOtherLinkages() {
+        return otherLinkages;
+    }
+
+    public void setOtherLinkages(Linkage otherLinkages) {
+        this.otherLinkages = otherLinkages;
     }
 
     public List<MergedRecord> getMergedRecords() {
