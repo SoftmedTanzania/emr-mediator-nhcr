@@ -1,7 +1,6 @@
 package tz.go.moh.him.emr.mediator.nhcr.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.apache.commons.lang3.StringUtils;
 
 
 /**

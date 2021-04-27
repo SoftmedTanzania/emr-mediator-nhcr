@@ -7,19 +7,27 @@ import akka.testkit.JavaTestKit;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.*;
+import org.junit.runner.RunWith;
 import org.openhim.mediator.engine.MediatorConfig;
 import org.openhim.mediator.engine.messages.FinishRequest;
 import org.openhim.mediator.engine.messages.MediatorSocketRequest;
 import org.openhim.mediator.engine.testing.MockLauncher;
 import org.openhim.mediator.engine.testing.TestingUtils;
-import tz.go.moh.him.emr.mediator.nhcr.mock.MockDestination;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import tz.go.moh.him.emr.mediator.nhcr.mock.MockEmr;
+import tz.go.moh.him.emr.mediator.nhcr.mock.MockNhcr;
 import tz.go.moh.him.emr.mediator.nhcr.orchestrator.DefaultOrchestrator;
+import tz.go.moh.him.emr.mediator.nhcr.utils.MllpUtils;
 import tz.go.moh.him.emr.mediator.nhcr.utils.TestUtils;
 
 import java.io.File;
 import java.io.InputStream;
 import java.util.*;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(MllpUtils.class)
 public class DefaultOrchestratorTest {
 
     /**
@@ -47,7 +55,8 @@ public class DefaultOrchestratorTest {
     public void before() {
         List<MockLauncher.ActorToLaunch> actorsToLaunch = new LinkedList<>();
 
-        actorsToLaunch.add(new MockLauncher.ActorToLaunch("mllp-connector", MockDestination.class));
+        actorsToLaunch.add(new MockLauncher.ActorToLaunch("mllp-connector", MockNhcr.class));
+        actorsToLaunch.add(new MockLauncher.ActorToLaunch("http-connector", MockEmr.class));
 
         TestingUtils.launchActors(system, configuration.getName(), actorsToLaunch);
     }
@@ -118,8 +127,9 @@ public class DefaultOrchestratorTest {
     @Test
     public void testMediatorSocketRequest() throws Exception {
         new JavaTestKit(system) {{
-            final MediatorConfig testConfig = new MediatorConfig("emr-mediator-nhcr", "localhost", 3026);
-            final ActorRef defaultOrchestrator = system.actorOf(Props.create(DefaultOrchestrator.class, testConfig));
+            PowerMockito.mockStatic(MllpUtils.class);
+
+            final ActorRef defaultOrchestrator = system.actorOf(Props.create(DefaultOrchestrator.class, configuration));
 
             MediatorSocketRequest request = new MediatorSocketRequest(
                     getRef(),

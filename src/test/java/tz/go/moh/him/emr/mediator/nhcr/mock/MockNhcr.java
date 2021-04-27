@@ -5,12 +5,12 @@ import org.openhim.mediator.engine.messages.MediatorSocketRequest;
 /**
  * Represents a mock destination.
  */
-public class MockDestination extends MockSocketConnector {
+public class MockNhcr extends MockSocketConnector {
 
     /**
-     * Initializes a new instance of the {@link MockDestination} class.
+     * Initializes a new instance of the {@link MockNhcr} class.
      */
-    public MockDestination() {
+    public MockNhcr() {
     }
 
     /**

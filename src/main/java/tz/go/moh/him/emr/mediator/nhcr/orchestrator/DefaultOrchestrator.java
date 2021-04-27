@@ -1,19 +1,28 @@
 package tz.go.moh.him.emr.mediator.nhcr.orchestrator;
 
+import akka.actor.ActorSelection;
+import akka.event.Logging;
+import akka.event.LoggingAdapter;
 import ca.uhn.hl7v2.DefaultHapiContext;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.v25.message.ACK;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.http.HttpHeaders;
 import org.openhim.mediator.engine.MediatorConfig;
 import org.openhim.mediator.engine.connectors.MLLPConnector;
-import org.openhim.mediator.engine.messages.FinishRequest;
+import org.openhim.mediator.engine.messages.MediatorHTTPRequest;
+import org.openhim.mediator.engine.messages.MediatorHTTPResponse;
 import org.openhim.mediator.engine.messages.MediatorSocketRequest;
 import tz.go.moh.him.emr.mediator.nhcr.domain.EmrMessage;
 import tz.go.moh.him.emr.mediator.nhcr.hl7v2.v25.message.ZXT_A39;
 import tz.go.moh.him.emr.mediator.nhcr.utils.HL7v2MessageBuilderUtils;
 import tz.go.moh.him.emr.mediator.nhcr.utils.MllpUtils;
+import tz.go.moh.him.mediator.core.serialization.JsonSerializer;
 
 import java.io.IOException;
-import java.util.UUID;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 /**
  * Represents a default orchestrator.
@@ -21,9 +30,19 @@ import java.util.UUID;
 public class DefaultOrchestrator extends MLLPConnector {
 
     /**
+     * The logger instance.
+     */
+    protected final LoggingAdapter log = Logging.getLogger(getContext().system(), this);
+
+    /**
      * The mediator configuration.
      */
     private final MediatorConfig config;
+
+    /**
+     * The working request.
+     */
+    private MediatorSocketRequest workingRequest;
 
     /**
      * Initializes a new instance of the {@link DefaultOrchestrator} class.
@@ -35,51 +54,101 @@ public class DefaultOrchestrator extends MLLPConnector {
     }
 
     /**
-     * Handles the received message.
+     * Handles the received message
      *
      * @param msg The received message.
+     * @throws HL7Exception if an HL7 exception occurs
+     * @throws IOException  if an IO exception occurs
      */
     @Override
     public void onReceive(Object msg) throws HL7Exception, IOException {
         if (msg instanceof MediatorSocketRequest) {
-            FinishRequest finishRequest = null;
-            ACK ack = null;
-            try {
 
-                // parse message
-                ZXT_A39 a40 = HL7v2MessageBuilderUtils.parseZxtA39(((MediatorSocketRequest) msg).getBody());
+            workingRequest = (MediatorSocketRequest) msg;
 
-                // build the EMR message
-                EmrMessage emrMessage = HL7v2MessageBuilderUtils.convertToEmrMessage(a40);
-
-                boolean success = false;
-
-
-//                host = scheme + "://" + host + ":" + port + path;
-//
-//                MediatorHTTPRequest request = new MediatorHTTPRequest(workingRequest.getRequestHandler(), getSelf(), host, "POST",
-//                        host, mapper.writeValueAsString(hfrRequest), headers, parameters);
-
-//                ActorSelection httpConnector = getContext().actorSelection(config.userPathFor("http-connector"));
-//                httpConnector.tell(request, getSelf());
-
-
-                // create the ACK to send back to the NHCR
-                ack = HL7v2MessageBuilderUtils.createAck(a40.getMSH().getMessageControlID().getValue(), success);
-
-            } catch (Exception e) {
-
-                // in the event of an exception, we need to create a generic ACK
-                // and respond to the NHCR, indicating a failure
-                ack = HL7v2MessageBuilderUtils.createAck(UUID.randomUUID().toString(), false);
-            } finally {
-                MllpUtils.sendMessage(ack, this.config, new DefaultHapiContext(), null);
-
-                finishRequest = new FinishRequest(ack.encode(), "", 500);
-                ((MediatorSocketRequest) msg).getRequestHandler().tell(finishRequest, getSelf());
-            }
+            handleSocketRequest(workingRequest);
+        } else if (msg instanceof MediatorHTTPResponse) {
+            this.handleHttpResponse((MediatorHTTPResponse) msg);
         } else {
             unhandled(msg);
+        }
+    }
+
+    /**
+     * Handles a mediator socket request.
+     *
+     * @param request The request.
+     * @throws HL7Exception if an HL7 exception occurs
+     * @throws IOException  if an IO exception occurs
+     */
+    private void handleSocketRequest(MediatorSocketRequest request) throws HL7Exception, IOException {
+        try {
+
+            Map<String, String> headers = new HashMap<>();
+
+            headers.put(HttpHeaders.CONTENT_TYPE, "application/json");
+
+            List<Pair<String, String>> parameters = new ArrayList<>();
+
+            // parse message
+            ZXT_A39 a40 = HL7v2MessageBuilderUtils.parseZxtA39(request.getBody());
+
+            JsonSerializer serializer = new JsonSerializer();
+
+            // build the EMR message
+            EmrMessage emrMessage = HL7v2MessageBuilderUtils.convertToEmrMessage(a40);
+
+            String url = a40.getSFT(0).getSft1_SoftwareVendorOrganization().getXon1_OrganizationName().getValue();
+            String username = a40.getSFT(0).getSft3_SoftwareProductName().getValue();
+            String password = a40.getSFT(0).getSft5_SoftwareProductInformation().getValue();
+
+            byte[] encodedAuth = Base64.encodeBase64((username + ":" + password).getBytes(StandardCharsets.ISO_8859_1));
+            String authHeader = "Basic " + new String(encodedAuth);
+
+            headers.put(HttpHeaders.AUTHORIZATION, authHeader);
+            headers.put("X-Request-Id", a40.getMSH().getMessageControlID().getValue());
+
+//            host = scheme + "://" + host + ":" + port + path;
+
+            MediatorHTTPRequest requestToEmr = new MediatorHTTPRequest(workingRequest.getRequestHandler(), getSelf(), url, "POST", url, serializer.serializeToString(emrMessage), headers, parameters);
+
+            ActorSelection httpConnector = getContext().actorSelection(config.userPathFor("http-connector"));
+            httpConnector.tell(requestToEmr, getSelf());
+        } catch (Exception e) {
+
+            // in the event of an exception, we need to create a generic ACK
+            // and respond to the NHCR, indicating a failure
+            ACK ack = HL7v2MessageBuilderUtils.createAck(UUID.randomUUID().toString(), false);
+
+            MllpUtils.sendMessage(ack, config, new DefaultHapiContext(), null);
+        }
+    }
+
+    /**
+     * Handles a mediator HTTP response.
+     *
+     * @param response The response
+     * @throws HL7Exception if an HL7 exception occurs
+     * @throws IOException  if an IO exception occurs
+     */
+    private void handleHttpResponse(MediatorHTTPResponse response) throws HL7Exception, IOException {
+        ACK ack = null;
+        boolean success = false;
+
+        try {
+            success = response.getStatusCode() == 200;
+
+            String originalRequestId = response.getHeaders().get("X-Request-Id");
+
+            ack = HL7v2MessageBuilderUtils.createAck(originalRequestId, success);
+
+        } catch (Exception e) {
+            // in the event of an exception, we need to create a generic ACK
+            // and respond to the NHCR, indicating a failure
+            ack = HL7v2MessageBuilderUtils.createAck(UUID.randomUUID().toString(), success);
+        } finally {
+            MllpUtils.sendMessage(ack, config, new DefaultHapiContext(), null);
+            workingRequest.getRequestHandler().tell(response.toFinishRequest(), getSelf());
         }
     }
 }
