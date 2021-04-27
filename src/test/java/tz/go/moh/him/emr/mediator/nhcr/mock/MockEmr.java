@@ -3,7 +3,7 @@ package tz.go.moh.him.emr.mediator.nhcr.mock;
 import org.junit.Assert;
 import org.openhim.mediator.engine.messages.MediatorHTTPRequest;
 import org.openhim.mediator.engine.testing.MockHTTPConnector;
-import tz.go.moh.him.emr.mediator.nhcr.DefaultOrchestratorTest;
+import tz.go.moh.him.emr.mediator.nhcr.orchestrator.DefaultOrchestratorTest;
 
 import java.io.InputStream;
 import java.util.HashMap;

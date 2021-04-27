@@ -5,13 +5,25 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Represents a program id.
  */
-public class ProgramId extends GenericId {
+public class ProgramId {
 
     /**
-     * The value.
+     * The assigning authority.
      */
-    @JsonProperty("name")
-    private String value;
+    @JsonProperty("assigningAuthority")
+    private String assigningAuthority;
+
+    /**
+     * The assigning facility.
+     */
+    @JsonProperty("assigningFacility")
+    private String assigningFacility;
+
+    /**
+     * The id.
+     */
+    @JsonProperty("id")
+    private String id;
 
     /**
      * Initializes a new instance of the {@link ProgramId} class.
@@ -19,32 +31,27 @@ public class ProgramId extends GenericId {
     public ProgramId() {
     }
 
-    /**
-     * Initializes a new instance of the {@link ProgramId} class.
-     *
-     * @param key   The key.
-     * @param value The value.
-     */
-    public ProgramId(String key, String value) {
-        super(key);
-        this.setValue(value);
+    public String getAssigningAuthority() {
+        return assigningAuthority;
     }
 
-    /**
-     * Gets the value.
-     *
-     * @return Returns the value.
-     */
-    public String getValue() {
-        return value;
+    public void setAssigningAuthority(String assigningAuthority) {
+        this.assigningAuthority = assigningAuthority;
     }
 
-    /**
-     * Sets the value.
-     *
-     * @param value The value to set.
-     */
-    public void setValue(String value) {
-        this.value = value;
+    public String getAssigningFacility() {
+        return assigningFacility;
+    }
+
+    public void setAssigningFacility(String assigningFacility) {
+        this.assigningFacility = assigningFacility;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

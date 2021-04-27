@@ -5,12 +5,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Represents an insurance id.
  */
-public class InsuranceId extends GenericId {
+public class InsuranceId {
+
     /**
-     * The value.
+     * The id.
+     */
+    @JsonProperty("id")
+    private String id;
+
+    /**
+     * The name.
      */
     @JsonProperty("name")
-    private String value;
+    private String name;
 
     /**
      * Initializes a new instance of the {@link InsuranceId} class.
@@ -19,31 +26,38 @@ public class InsuranceId extends GenericId {
     }
 
     /**
-     * Initializes a new instance of the {@link InsuranceId} class.
+     * Gets the id.
      *
-     * @param key   The key.
-     * @param value The value.
+     * @return Returns the id.
      */
-    public InsuranceId(String key, String value) {
-        super(key);
-        this.setValue(value);
+    public String getId() {
+        return id;
     }
 
     /**
-     * Gets the value.
+     * Sets the id.
      *
-     * @return Returns the value.
+     * @param id The id to set.
      */
-    public String getValue() {
-        return value;
+    public void setId(String id) {
+        this.id = id;
     }
 
     /**
-     * Sets the value.
+     * Gets the name.
      *
-     * @param value The value to set.
+     * @return Returns the name.
      */
-    public void setValue(String value) {
-        this.value = value;
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Sets the name.
+     *
+     * @param name The name to set,
+     */
+    public void setName(String name) {
+        this.name = name;
     }
 }

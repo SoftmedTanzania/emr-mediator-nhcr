@@ -5,13 +5,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Represents a patient id.
  */
-public class PatientId extends GenericId {
+public class PatientId {
+
+    /**
+     * The id.
+     */
+    @JsonProperty("id")
+    private String id;
 
     /**
      * The value.
      */
     @JsonProperty("type")
-    private String value;
+    private String type;
 
     /**
      * Initializes a new instance of the {@link PatientId} class.
@@ -22,29 +28,47 @@ public class PatientId extends GenericId {
     /**
      * Initializes a new instance of the {@link PatientId} class.
      *
-     * @param key   The key.
-     * @param value The value.
+     * @param type The type.
+     * @param id   The id value.
      */
-    public PatientId(String key, String value) {
-        super(key);
-        this.setValue(value);
+    public PatientId(String type, String id) {
+        this.type = type;
+        this.id = id;
     }
 
     /**
-     * Gets the value.
+     * Gets the id.
      *
-     * @return Returns the value.
+     * @return Returns the id.
      */
-    public String getValue() {
-        return value;
+    public String getId() {
+        return id;
     }
 
     /**
-     * Sets the value.
+     * Sets the id.
      *
-     * @param value The value to set.
+     * @param id The id to set.
      */
-    public void setValue(String value) {
-        this.value = value;
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    /**
+     * Gets the type.
+     *
+     * @return Returns the type.
+     */
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * Sets the type.
+     *
+     * @param type The type to set.
+     */
+    public void setType(String type) {
+        this.type = type;
     }
 }

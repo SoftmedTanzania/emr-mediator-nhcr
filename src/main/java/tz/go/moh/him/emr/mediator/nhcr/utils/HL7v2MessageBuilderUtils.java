@@ -14,16 +14,19 @@ import tz.go.moh.him.emr.mediator.nhcr.hl7v2.v25.message.ZXT_A39;
 import tz.go.moh.him.mediator.core.exceptions.ArgumentNullException;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Represents an HL7v2 message builder utility.
  */
 public class HL7v2MessageBuilderUtils {
 
+
+    private static final String NATIONAL_ID = "NATIONAL_ID";
+    private static final String VOTERS_ID = "VOTERS_ID";
+    private static final String DRIVERS_LICENSE_ID = "DRIVERS_LICENSE_ID";
+    private static final String RITA_ID = "RITA_ID";
 
     /**
      * Converts an {@link ZXT_A39} instance to an {@link EmrMessage} instance.
@@ -55,7 +58,9 @@ public class HL7v2MessageBuilderUtils {
 
             // build a list of ids from the MRG segment
             for (int k = 0; k < mrg.getMrg1_PriorPatientIdentifierListReps(); k++) {
-                mergeIds.add(mrg.getMrg1_PriorPatientIdentifierList(k).getCx1_IDNumber().getValue());
+                String value = mrg.getMrg1_PriorPatientIdentifierList(k).getCx1_IDNumber().getValue();
+                mergeIds.add(value);
+                emrMessage.getMergedRecords().add(new MergedRecord(value));
             }
 
             // set the MRN, we assume the first id in the merge segment is the ID of the surviving record
@@ -76,8 +81,9 @@ public class HL7v2MessageBuilderUtils {
                         continue;
                     }
 
-                    program.setKey(pid.getPatientIdentifierList(j).getAssigningAuthority().getNamespaceID().getValue());
-                    program.setValue(pid.getPatientIdentifierList(j).getCx1_IDNumber().getValue());
+                    program.setId(pid.getPatientIdentifierList(j).getCx1_IDNumber().getValue());
+                    program.setAssigningAuthority(pid.getPatientIdentifierList(j).getAssigningAuthority().getNamespaceID().getValue());
+                    program.setAssigningFacility(pid.getPatientIdentifierList(j).getAssigningFacility().getNamespaceID().getValue());
 
                     programs.add(program);
                 }
@@ -126,27 +132,26 @@ public class HL7v2MessageBuilderUtils {
                 emrMessage.setOtherName(pid.getPatientAlias(0).getGivenName().getValue());
             }
 
+
             // set the national id
-            if (pid.getCitizenship(0) != null) {
-                emrMessage.getIds().add(new PatientId("NATIONAL_ID", pid.getCitizenship(0).getIdentifier().getValue()));
-            }
+            emrMessage.getIds().addAll(Arrays.stream(pid.getCitizenship()).map(c -> new PatientId(NATIONAL_ID, c.getIdentifier().getValue())).collect(Collectors.toList()));
 
             // set the voters id
-            emrMessage.getIds().add(new PatientId("VOTERS_ID", a40.getZXT().getVotersId().getValue()));
+            emrMessage.getIds().add(new PatientId(VOTERS_ID, a40.getZXT().getVotersId().getValue()));
 
             // set the drivers license id
-            emrMessage.getIds().add(new PatientId("DRIVERS_LICENSE_ID", pid.getDriverSLicenseNumberPatient().getDln1_LicenseNumber().getValue()));
+            emrMessage.getIds().add(new PatientId(DRIVERS_LICENSE_ID, pid.getDriverSLicenseNumberPatient().getDln1_LicenseNumber().getValue()));
 
             // set the rita id
-            emrMessage.getIds().add(new PatientId("RITA_ID", a40.getZXT().getRitaId().getId().getValue()));
+            emrMessage.getIds().add(new PatientId(RITA_ID, a40.getZXT().getRitaId().getId().getValue()));
 
             // set the insurance id
             InsuranceId insuranceId = new InsuranceId();
 
-            insuranceId.setValue(a40.getIN1().getIn11_SetIDIN1().getValue());
+            insuranceId.setId(a40.getIN1().getIn11_SetIDIN1().getValue());
 
             if (a40.getIN1().getIn14_InsuranceCompanyName(0) != null) {
-                insuranceId.setKey(a40.getIN1().getIn14_InsuranceCompanyName(0).getOrganizationName().getValue());
+                insuranceId.setName(a40.getIN1().getIn14_InsuranceCompanyName(0).getOrganizationName().getValue());
             }
 
             emrMessage.setInsuranceId(insuranceId);

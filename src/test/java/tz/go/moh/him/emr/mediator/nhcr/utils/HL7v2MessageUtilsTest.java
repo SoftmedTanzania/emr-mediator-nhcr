@@ -1,7 +1,6 @@
 package tz.go.moh.him.emr.mediator.nhcr.utils;
 
 import ca.uhn.hl7v2.HL7Exception;
-import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import tz.go.moh.him.emr.mediator.nhcr.domain.EmrMessage;
@@ -9,7 +8,6 @@ import tz.go.moh.him.emr.mediator.nhcr.hl7v2.v25.message.ZXT_A39;
 import tz.go.moh.him.mediator.core.serialization.JsonSerializer;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 public class HL7v2MessageUtilsTest {
 

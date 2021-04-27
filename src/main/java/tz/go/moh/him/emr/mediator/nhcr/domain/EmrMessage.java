@@ -23,7 +23,7 @@ public class EmrMessage {
     private String lastName;
 
     @JsonProperty("ids")
-    private List<GenericId> ids;
+    private List<PatientId> ids;
 
     @JsonProperty("insurance")
     private InsuranceId insuranceId;
@@ -113,11 +113,11 @@ public class EmrMessage {
         this.lastName = lastName;
     }
 
-    public List<GenericId> getIds() {
+    public List<PatientId> getIds() {
         return ids;
     }
 
-    public void setIds(List<GenericId> ids) {
+    public void setIds(List<PatientId> ids) {
         this.ids = ids;
     }
 

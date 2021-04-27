@@ -1,4 +1,4 @@
-package tz.go.moh.him.emr.mediator.nhcr;
+package tz.go.moh.him.emr.mediator.nhcr.orchestrator;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
@@ -18,7 +18,6 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import tz.go.moh.him.emr.mediator.nhcr.mock.MockEmr;
 import tz.go.moh.him.emr.mediator.nhcr.mock.MockNhcr;
-import tz.go.moh.him.emr.mediator.nhcr.orchestrator.DefaultOrchestrator;
 import tz.go.moh.him.emr.mediator.nhcr.utils.MllpUtils;
 import tz.go.moh.him.emr.mediator.nhcr.utils.TestUtils;
 
@@ -39,27 +38,6 @@ public class DefaultOrchestratorTest {
      * The actor system.
      */
     private static ActorSystem system;
-
-    /**
-     * Runs cleanup after each test execution.
-     */
-    @After
-    public void after() {
-        system = ActorSystem.create();
-    }
-
-    /**
-     * Runs initialization before each test execution.
-     */
-    @Before
-    public void before() {
-        List<MockLauncher.ActorToLaunch> actorsToLaunch = new LinkedList<>();
-
-        actorsToLaunch.add(new MockLauncher.ActorToLaunch("mllp-connector", MockNhcr.class));
-        actorsToLaunch.add(new MockLauncher.ActorToLaunch("http-connector", MockEmr.class));
-
-        TestingUtils.launchActors(system, configuration.getName(), actorsToLaunch);
-    }
 
     /**
      * Runs cleanup after class execution.
@@ -122,6 +100,27 @@ public class DefaultOrchestratorTest {
         config.setHeartbeatsEnabled(true);
 
         return config;
+    }
+
+    /**
+     * Runs cleanup after each test execution.
+     */
+    @After
+    public void after() {
+        system = ActorSystem.create();
+    }
+
+    /**
+     * Runs initialization before each test execution.
+     */
+    @Before
+    public void before() {
+        List<MockLauncher.ActorToLaunch> actorsToLaunch = new LinkedList<>();
+
+        actorsToLaunch.add(new MockLauncher.ActorToLaunch("mllp-connector", MockNhcr.class));
+        actorsToLaunch.add(new MockLauncher.ActorToLaunch("http-connector", MockEmr.class));
+
+        TestingUtils.launchActors(system, configuration.getName(), actorsToLaunch);
     }
 
     @Test

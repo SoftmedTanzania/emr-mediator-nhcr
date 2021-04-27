@@ -35,13 +35,16 @@ public class ZXT_A39 extends ADT_A39 {
 
         // Now, let's add the ZXT segment at the right spot
         String[] segmentNames = getNames();
-        int indexOfPidPd1MrgPv1 = Arrays.asList(segmentNames).indexOf("PIDPD1MRGPV1");
+        int indexOfPidPd1MrgPv1 = Arrays.asList(segmentNames).indexOf("PATIENT");
 
         // Put the ZXT segment right after the ADT_A40_PIDPD1MRGPV1 segment
         int index = indexOfPidPd1MrgPv1 + 1;
 
-        this.add(ZXT.class, false, false, index);
+//        int test = Arrays.asList(segmentNames).indexOf("PIDPD1MRGPV1IN1");
+
         this.add(IN1.class, false, false, index);
+        this.add(ZXT.class, false, false, index + 1);
+
     }
 
     /**
