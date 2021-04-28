@@ -38,21 +38,6 @@ public class Address {
     }
 
     /**
-     * Initializes a new instance of the {@link Address} class.
-     *
-     * @param region  The region.
-     * @param council The council.
-     * @param ward    The ward.
-     * @param village The village.
-     */
-    public Address(String region, String council, String ward, String village) {
-        this.region = region;
-        this.council = council;
-        this.ward = ward;
-        this.village = village;
-    }
-
-    /**
      * Gets the region.
      *
      * @return Returns the region.

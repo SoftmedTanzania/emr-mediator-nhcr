@@ -32,19 +32,6 @@ public class Linkage {
     }
 
     /**
-     * Initializes a new instance of the {@link Linkage} class.
-     *
-     * @param id            The id.
-     * @param sourceOfId    The source of the id.
-     * @param typeOfLinkage The type of linkage.
-     */
-    public Linkage(String id, String sourceOfId, String typeOfLinkage) {
-        this.setId(id);
-        this.setSourceOfId(sourceOfId);
-        this.setTypeOfLinkage(typeOfLinkage);
-    }
-
-    /**
      * Gets the id.
      *
      * @return Returns the id.
