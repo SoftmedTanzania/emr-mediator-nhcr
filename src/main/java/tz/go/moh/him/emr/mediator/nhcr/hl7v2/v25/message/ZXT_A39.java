@@ -33,16 +33,14 @@ public class ZXT_A39 extends ADT_A39 {
     public ZXT_A39(ModelClassFactory factory) throws HL7Exception {
         super(factory);
 
-        // Now, let's add the ZXT segment at the right spot
-        String[] segmentNames = getNames();
-        int indexOfPidPd1MrgPv1 = Arrays.asList(segmentNames).indexOf("PATIENT");
+        int indexOfPatient = Arrays.asList(this.getNames()).indexOf("PATIENT");
 
-        // Put the ZXT segment right after the ADT_A40_PIDPD1MRGPV1 segment
-        int index = indexOfPidPd1MrgPv1 + 1;
+        int index = indexOfPatient + 1;
 
-//        int test = Arrays.asList(segmentNames).indexOf("PIDPD1MRGPV1IN1");
-
+        // put the IN1 segment after the ADT_A39_PATIENT segment
         this.add(IN1.class, false, false, index);
+
+        // Put the ZXT segment right after the IN1 segment
         this.add(ZXT.class, false, false, index + 1);
 
     }

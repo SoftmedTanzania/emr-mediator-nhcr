@@ -59,18 +59,18 @@ public class ZXT extends AbstractSegment {
     /**
      * Create an accessor for each field
      *
-     * @return The Voters Id
+     * @return Returns the voters id.
      */
     public ST getVotersId() {
-        return (ST) this.getTypedField(1, 0);
+        return this.getTypedField(1, 0);
     }
 
     /**
      * Create an accessor for each field
      *
-     * @return The RitaId Object
+     * @return Returns the Rita id.
      */
     public RitaID getRitaId() {
-        return (RitaID) this.getTypedField(2, 0);
+        return this.getTypedField(2, 0);
     }
 }
