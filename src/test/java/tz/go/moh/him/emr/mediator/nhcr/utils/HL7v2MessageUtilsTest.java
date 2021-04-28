@@ -5,6 +5,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import tz.go.moh.him.emr.mediator.nhcr.domain.EmrRequest;
 import tz.go.moh.him.emr.mediator.nhcr.hl7v2.v25.message.ZXT_A39;
+import tz.go.moh.him.mediator.core.exceptions.ArgumentNullException;
 import tz.go.moh.him.mediator.core.serialization.JsonSerializer;
 
 import java.io.IOException;
@@ -47,5 +48,29 @@ public class HL7v2MessageUtilsTest {
         Assert.assertEquals("password", a39.getSFT().getSft5_SoftwareProductInformation().getValue());
 
         Assert.assertNotNull(a39);
+    }
+
+    /**
+     * Test the parsing of an ZXT_A39 message.
+     */
+    @Test(expected = ArgumentNullException.class)
+    public void testParseZxtA39EmptyMessage() throws HL7Exception {
+        HL7v2MessageBuilderUtils.parseZxtA39("");
+    }
+
+    /**
+     * Test the parsing of an ZXT_A39 message.
+     */
+    @Test(expected = HL7Exception.class)
+    public void testParseZxtA39InvalidMessage() throws HL7Exception {
+        HL7v2MessageBuilderUtils.parseZxtA39("MSH|^~\\&|NHCR|NHCR|CTC|HIM|20210210103700|");
+    }
+
+    /**
+     * Test the parsing of an ZXT_A39 message.
+     */
+    @Test(expected = ArgumentNullException.class)
+    public void testParseZxtA39NullMessage() throws HL7Exception {
+        HL7v2MessageBuilderUtils.parseZxtA39(null);
     }
 }
