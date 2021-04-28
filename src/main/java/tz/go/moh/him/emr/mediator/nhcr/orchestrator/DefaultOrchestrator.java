@@ -145,7 +145,9 @@ public class DefaultOrchestrator extends MLLPConnector {
         boolean success = false;
 
         try {
-            success = response.getStatusCode() == 200;
+            // if the response status code is in the success status range
+            // we can consider the response from the destination system a success
+            success = response.getStatusCode() >= 200 && response.getStatusCode() <= 299;
 
             String originalRequestId = response.getHeaders().get("X-Request-Id");
 
