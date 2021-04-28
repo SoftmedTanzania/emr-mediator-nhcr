@@ -10,8 +10,17 @@ import tz.go.moh.him.mediator.core.serialization.JsonSerializer;
 
 import java.io.IOException;
 
+/**
+ * Contains tests for the {@link HL7v2MessageBuilderUtils} class.
+ */
 public class HL7v2MessageUtilsTest {
 
+    /**
+     * Tests the conversion of an HL7 message to an EMR message.
+     *
+     * @throws IOException  if an IO exception occurs
+     * @throws HL7Exception if an HL7 exception occurs
+     */
     @Test
     public void testConvertToEmrMessage() throws IOException, HL7Exception {
         String message = TestUtils.getHL7TestMessage();

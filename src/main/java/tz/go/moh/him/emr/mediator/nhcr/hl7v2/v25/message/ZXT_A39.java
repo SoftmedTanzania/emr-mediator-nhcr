@@ -48,21 +48,19 @@ public class ZXT_A39 extends ADT_A39 {
     /**
      * Add an accessor for the IN1 segment
      *
-     * @return The IN1 segment
-     * @throws HL7Exception The exception thrown
+     * @return Returns the IN1 segment.
      */
-    public IN1 getIN1() throws HL7Exception {
-        return (IN1) get("IN1");
+    public IN1 getIN1() {
+        return getTyped("IN1", IN1.class);
     }
 
     /**
      * Add an accessor for the ZXT segment
      *
-     * @return The ZXT segment
-     * @throws HL7Exception The exception thrown
+     * @return Returns the ZXT segment.
      */
-    public ZXT getZXT() throws HL7Exception {
-        return (ZXT) get("ZXT");
+    public ZXT getZXT() {
+        return getTyped("ZXT", ZXT.class);
     }
 
 }

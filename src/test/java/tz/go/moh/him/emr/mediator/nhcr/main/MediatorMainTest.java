@@ -15,7 +15,7 @@ public class MediatorMainTest {
     /**
      * Test the mediator main class loading the configuration.
      *
-     * @throws Exception
+     * @throws Exception if an Exception occurs
      */
     @Test
     public void mediatorMainTest() throws Exception {
