@@ -136,6 +136,9 @@ public class EmrRequest {
     @JsonProperty("uln")
     private String universalLifetimeNumber;
 
+    /**
+     * Initializes a new instance of the {@link EmrRequest} class.
+     */
     public EmrRequest() {
         setIds(new ArrayList<>());
         setProgramIds(new ArrayList<>());
