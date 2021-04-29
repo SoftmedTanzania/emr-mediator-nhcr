@@ -1,13 +1,7 @@
 package tz.go.moh.him.emr.mediator.nhcr.utils;
 
-import ca.uhn.hl7v2.DefaultHapiContext;
 import ca.uhn.hl7v2.HL7Exception;
-import ca.uhn.hl7v2.HapiContext;
-import ca.uhn.hl7v2.model.v25.message.ADT_A39;
-import ca.uhn.hl7v2.model.v25.segment.SFT;
-import ca.uhn.hl7v2.parser.CustomModelClassFactory;
-import ca.uhn.hl7v2.parser.ModelClassFactory;
-import ca.uhn.hl7v2.parser.Parser;
+import ca.uhn.hl7v2.util.Terser;
 import org.junit.Assert;
 import org.junit.Test;
 import tz.go.moh.him.emr.mediator.nhcr.domain.EmrRequest;
@@ -39,6 +33,8 @@ public class HL7v2MessageUtilsTest {
         Assert.assertEquals("CTC", a39.getMSH().getMsh5_ReceivingApplication().getNamespaceID().getValue());
         Assert.assertEquals("HIM", a39.getMSH().getMsh6_ReceivingFacility().getNamespaceID().getValue());
 
+        Assert.assertEquals("A40", a39.getEVN().getEventTypeCode().getValue());
+
         Assert.assertEquals("https://example.com", a39.getSFT().getSft1_SoftwareVendorOrganization().getOrganizationName().getValue());
         Assert.assertEquals("username", a39.getSFT().getSft3_SoftwareProductName().getValue());
         Assert.assertEquals("password", a39.getSFT().getSft5_SoftwareProductInformation().getValue());
@@ -67,22 +63,18 @@ public class HL7v2MessageUtilsTest {
 
         ZXT_A39 a39 = HL7v2MessageBuilderUtils.parseZxtA39(message);
 
+        Assert.assertEquals("12341", a39.getZXT().getRitaId().getId().getValue());
+        Assert.assertEquals("12342", a39.getZXT().getVotersId().getValue());
+        Assert.assertEquals("BTH_CRT", a39.getZXT().getRitaId().getIdType().getValue());
+        Assert.assertEquals("Tanzania", a39.getZXT().getRitaId().getCountryName().getValue());
+        Assert.assertEquals("TZA", a39.getZXT().getRitaId().getCountryCode().getValue());
+
         Assert.assertEquals("NHCR", a39.getMSH().getMsh3_SendingApplication().getNamespaceID().getValue());
         Assert.assertEquals("NHCR", a39.getMSH().getMsh4_SendingFacility().getNamespaceID().getValue());
         Assert.assertEquals("CTC", a39.getMSH().getMsh5_ReceivingApplication().getNamespaceID().getValue());
         Assert.assertEquals("HIM", a39.getMSH().getMsh6_ReceivingFacility().getNamespaceID().getValue());
 
-//        Assert.assertEquals("A39", a39.getEVN().getEventTypeCode().getValue());
-
-        System.out.println(message);
-
-        SFT sft = a39.getSFTAll().get(0);
-
-        System.out.println(sft.getSft1_SoftwareVendorOrganization().getOrganizationName().getValue());
-        System.out.println(sft.getSft2_SoftwareCertifiedVersionOrReleaseNumber().getValue());
-        System.out.println(sft.getSft3_SoftwareProductName().getValue());
-        System.out.println(sft.getSft4_SoftwareBinaryID().getValue());
-        System.out.println(sft.getSft5_SoftwareProductInformation().getValue());
+        Assert.assertEquals("A40", a39.getEVN().getEventTypeCode().getValue());
 
         Assert.assertEquals("https://example.com", a39.getSFT().getSft1_SoftwareVendorOrganization().getOrganizationName().getValue());
         Assert.assertEquals("1.4", a39.getSFT().getSft2_SoftwareCertifiedVersionOrReleaseNumber().getValue());

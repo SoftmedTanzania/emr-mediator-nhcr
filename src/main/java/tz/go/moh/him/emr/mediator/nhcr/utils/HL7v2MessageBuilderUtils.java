@@ -9,6 +9,7 @@ import ca.uhn.hl7v2.model.v25.segment.PID;
 import ca.uhn.hl7v2.parser.CustomModelClassFactory;
 import ca.uhn.hl7v2.parser.ModelClassFactory;
 import ca.uhn.hl7v2.parser.Parser;
+import ca.uhn.hl7v2.parser.ParserConfiguration;
 import tz.go.moh.him.emr.mediator.nhcr.domain.*;
 import tz.go.moh.him.emr.mediator.nhcr.hl7v2.v25.message.ZXT_A39;
 import tz.go.moh.him.mediator.core.exceptions.ArgumentNullException;

@@ -7,8 +7,6 @@ import ca.uhn.hl7v2.parser.DefaultModelClassFactory;
 import ca.uhn.hl7v2.parser.ModelClassFactory;
 import tz.go.moh.him.emr.mediator.nhcr.hl7v2.v25.segment.ZXT;
 
-import java.util.Arrays;
-
 /**
  * Represents an HL7v2 message which is a derivative of ADT_A39, representing a patient merge.
  */
@@ -33,16 +31,8 @@ public class ZXT_A39 extends ADT_A39 {
     public ZXT_A39(ModelClassFactory factory) throws HL7Exception {
         super(factory);
 
-        int indexOfPatient = Arrays.asList(this.getNames()).indexOf("PATIENT");
-
-        int index = indexOfPatient + 1;
-
-        // put the IN1 segment after the ADT_A39_PATIENT segment
         this.add(IN1.class, false, false);
-
-        // Put the ZXT segment right after the IN1 segment
         this.add(ZXT.class, false, false);
-
     }
 
     /**
