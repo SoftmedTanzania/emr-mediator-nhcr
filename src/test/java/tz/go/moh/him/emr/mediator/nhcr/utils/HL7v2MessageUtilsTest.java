@@ -1,6 +1,7 @@
 package tz.go.moh.him.emr.mediator.nhcr.utils;
 
 import ca.uhn.hl7v2.HL7Exception;
+import ca.uhn.hl7v2.model.v25.segment.SFT;
 import org.junit.Assert;
 import org.junit.Test;
 import tz.go.moh.him.emr.mediator.nhcr.domain.EmrRequest;
@@ -65,9 +66,19 @@ public class HL7v2MessageUtilsTest {
         Assert.assertEquals("CTC", a39.getMSH().getMsh5_ReceivingApplication().getNamespaceID().getValue());
         Assert.assertEquals("HIM", a39.getMSH().getMsh6_ReceivingFacility().getNamespaceID().getValue());
 
+        Assert.assertEquals("A39", a39.getEVN().getEventTypeCode().getValue());
+
         System.out.println(message);
 
-//        Assert.assertEquals("https://example.com", a39.getSFT().getSft1_SoftwareVendorOrganization().getOrganizationName().getValue());
+        SFT sft = a39.getSFTAll().get(0);
+
+        System.out.println(sft.getSft1_SoftwareVendorOrganization().getOrganizationName().getValue());
+        System.out.println(sft.getSft2_SoftwareCertifiedVersionOrReleaseNumber().getValue());
+        System.out.println(sft.getSft3_SoftwareProductName().getValue());
+        System.out.println(sft.getSft4_SoftwareBinaryID().getValue());
+        System.out.println(sft.getSft5_SoftwareProductInformation().getValue());
+
+        Assert.assertEquals("https://example.com", a39.getSFT().getSft1_SoftwareVendorOrganization().getOrganizationName().getValue());
         Assert.assertEquals("1.4", a39.getSFT().getSft2_SoftwareCertifiedVersionOrReleaseNumber().getValue());
         Assert.assertEquals("username", a39.getSFT().getSft3_SoftwareProductName().getValue());
         Assert.assertEquals("binary id", a39.getSFT().getSft4_SoftwareBinaryID().getValue());
