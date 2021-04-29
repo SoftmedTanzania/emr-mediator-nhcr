@@ -38,10 +38,10 @@ public class ZXT_A39 extends ADT_A39 {
         int index = indexOfPatient + 1;
 
         // put the IN1 segment after the ADT_A39_PATIENT segment
-        this.add(IN1.class, false, false, index);
+        this.add(IN1.class, false, false);
 
         // Put the ZXT segment right after the IN1 segment
-        this.add(ZXT.class, false, false, index + 1);
+        this.add(ZXT.class, false, false);
 
     }
 
