@@ -143,7 +143,7 @@ public class DefaultOrchestratorTest {
 
             defaultOrchestrator.tell(request, getRef());
 
-            final Object[] out = new ReceiveWhile<Object>(Object.class, duration("3 seconds")) {
+            final Object[] out = new ReceiveWhile<Object>(Object.class, duration("10 seconds")) {
                 @Override
                 protected Object match(Object msg) {
                     if (msg instanceof FinishRequest) {
