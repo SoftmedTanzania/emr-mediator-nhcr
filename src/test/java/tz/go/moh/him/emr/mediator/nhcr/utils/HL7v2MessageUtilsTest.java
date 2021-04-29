@@ -56,7 +56,9 @@ public class HL7v2MessageUtilsTest {
         ZXT_A39 a39 = HL7v2MessageBuilderUtils.parseZxtA39(message);
 
         Assert.assertEquals("https://pos1.com", a39.getSFT().getSft1_SoftwareVendorOrganization().getOrganizationName().getValue());
+        Assert.assertEquals("1.4", a39.getSFT().getSft2_SoftwareCertifiedVersionOrReleaseNumber().getValue());
         Assert.assertEquals("username", a39.getSFT().getSft3_SoftwareProductName().getValue());
+        Assert.assertEquals("binary id", a39.getSFT().getSft4_SoftwareBinaryID().getValue());
         Assert.assertEquals("password", a39.getSFT().getSft5_SoftwareProductInformation().getValue());
 
         Assert.assertNotNull(a39);
