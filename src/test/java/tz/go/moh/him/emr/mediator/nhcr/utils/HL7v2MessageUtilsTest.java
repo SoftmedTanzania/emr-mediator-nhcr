@@ -33,11 +33,14 @@ public class HL7v2MessageUtilsTest {
 
         Assert.assertNotNull(a39);
 
-        JsonSerializer serializer = new JsonSerializer();
-
         EmrRequest actual = HL7v2MessageBuilderUtils.convertToEmrMessage(a39);
 
+        Assert.assertNotNull(actual);
+
+        JsonSerializer serializer = new JsonSerializer();
         System.out.println(serializer.serializeToString(actual));
+
+//        Assert.assertEquals("", actual.);
     }
 
     /**

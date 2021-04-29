@@ -34,7 +34,7 @@ public class HL7v2MessageBuilderUtils {
      * @param a40 The HL7v2 message.
      * @return Returns the converted {@link EmrRequest}.
      */
-    public static EmrRequest convertToEmrMessage(ZXT_A39 a40) throws HL7Exception {
+    public static EmrRequest convertToEmrMessage(ZXT_A39 a40) {
         EmrRequest emrRequest = new EmrRequest();
 
         // assume PUT
@@ -163,6 +163,7 @@ public class HL7v2MessageBuilderUtils {
     /**
      * Creates an ACK message.
      *
+     * @param incomingMessageId The incoming message id.
      * @return Returns the created ACK message.
      * @throws HL7Exception if an HL7 exception occurs
      * @throws IOException  if an IO exception occurs
@@ -182,6 +183,8 @@ public class HL7v2MessageBuilderUtils {
     /**
      * Creates an ACK message.
      *
+     * @param incomingMessageId  The incoming message id.
+     * @param successfulResponse If the response was successful.
      * @return Returns the created ACK message.
      * @throws HL7Exception if an HL7 exception occurs
      * @throws IOException  if an IO exception occurs
