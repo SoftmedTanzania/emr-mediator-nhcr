@@ -6,7 +6,7 @@ import ca.uhn.hl7v2.HapiContext;
 import ca.uhn.hl7v2.model.v25.message.ACK;
 import ca.uhn.hl7v2.model.v25.segment.MRG;
 import ca.uhn.hl7v2.model.v25.segment.PID;
-import ca.uhn.hl7v2.parser.*;
+import ca.uhn.hl7v2.parser.Parser;
 import tz.go.moh.him.emr.mediator.nhcr.domain.*;
 import tz.go.moh.him.emr.mediator.nhcr.hl7v2.v25.message.ZXT_A39;
 import tz.go.moh.him.mediator.core.exceptions.ArgumentNullException;
@@ -20,10 +20,24 @@ import java.util.stream.Collectors;
  */
 public class HL7v2MessageBuilderUtils {
 
-
+    /**
+     * The national id.
+     */
     private static final String NATIONAL_ID = "NATIONAL_ID";
+
+    /**
+     * The voters id.
+     */
     private static final String VOTERS_ID = "VOTERS_ID";
+
+    /**
+     * The drivers license id.
+     */
     private static final String DRIVERS_LICENSE_ID = "DRIVERS_LICENSE_ID";
+
+    /**
+     * The Rita id.
+     */
     private static final String RITA_ID = "RITA_ID";
 
     /**
@@ -207,12 +221,8 @@ public class HL7v2MessageBuilderUtils {
             throw new ArgumentNullException("message - Value cannot be null");
         }
 
-        // Creating a custom model class factory for the custom ZXT_A40 message
         HapiContext context = new DefaultHapiContext();
         Parser parser = context.getPipeParser();
-
-//        ModelClassFactory modelClassFactory = new CustomModelClassFactory("tz.go.moh.him.emr.mediator.nhcr.hl7v2");
-//        context.setModelClassFactory(modelClassFactory);
 
         // fix MSH-10
         message = message.replace("ADT^A40^ADT_A40", "ZXT^A39^ZXT_A39");
