@@ -1,7 +1,6 @@
 package tz.go.moh.him.emr.mediator.nhcr.utils;
 
 import ca.uhn.hl7v2.HL7Exception;
-import ca.uhn.hl7v2.util.Terser;
 import org.junit.Assert;
 import org.junit.Test;
 import tz.go.moh.him.emr.mediator.nhcr.domain.EmrRequest;

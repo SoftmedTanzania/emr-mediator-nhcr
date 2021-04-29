@@ -3,7 +3,7 @@ package tz.go.moh.him.emr.mediator.nhcr.hl7v2.v25.message;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.v25.message.ADT_A39;
 import ca.uhn.hl7v2.model.v25.segment.IN1;
-import ca.uhn.hl7v2.parser.CustomModelClassFactory;
+import ca.uhn.hl7v2.parser.DefaultModelClassFactory;
 import ca.uhn.hl7v2.parser.ModelClassFactory;
 import tz.go.moh.him.emr.mediator.nhcr.hl7v2.v25.segment.ZXT;
 
@@ -17,7 +17,7 @@ public class ZXT_A39 extends ADT_A39 {
      * @throws HL7Exception The thrown exception
      */
     public ZXT_A39() throws HL7Exception {
-        this(new CustomModelClassFactory("tz.go.moh.him.emr.mediator.nhcr.hl7v2"));
+        this(new DefaultModelClassFactory());
     }
 
     /**
