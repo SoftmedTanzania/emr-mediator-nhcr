@@ -3,6 +3,7 @@ package tz.go.moh.him.emr.mediator.nhcr.utils;
 import ca.uhn.hl7v2.DefaultHapiContext;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.HapiContext;
+import ca.uhn.hl7v2.model.v25.datatype.XAD;
 import ca.uhn.hl7v2.model.v25.message.ACK;
 import ca.uhn.hl7v2.model.v25.segment.MRG;
 import ca.uhn.hl7v2.model.v25.segment.PID;
@@ -72,21 +73,14 @@ public class HL7v2MessageBuilderUtils {
         for (int i = 0; i < reps; i++) {
             PID pid = a40.getPATIENT(i).getPID();
 
-            if (pid == null) {
-                continue;
-            }
-
-            List<String> mergeIds = new ArrayList<>();
-
             // get the merge ids
             MRG mrg = a40.getPATIENT(i).getMRG();
 
             // build a list of ids from the MRG segment
-            for (int k = 0; k < mrg.getMrg1_PriorPatientIdentifierListReps(); k++) {
-                String value = mrg.getMrg1_PriorPatientIdentifierList(k).getCx1_IDNumber().getValue();
-                mergeIds.add(value);
-                emrRequest.getMergedRecords().add(new MergedRecord(value));
-            }
+            List<String> mergeIds = Arrays.stream(mrg.getMrg1_PriorPatientIdentifierList()).map(c -> {
+                emrRequest.getMergedRecords().add(new MergedRecord(c.getCx1_IDNumber().getValue()));
+                return c.getCx1_IDNumber().getValue();
+            }).collect(Collectors.toList());
 
             // set the MRN, we assume the first id in the merge segment is the ID of the surviving record
             emrRequest.setMedicalRecordNumber(mrg.getMrg1_PriorPatientIdentifierList(0).getCx1_IDNumber().getValue());
@@ -128,21 +122,22 @@ public class HL7v2MessageBuilderUtils {
                 emrRequest.setSex(pid.getAdministrativeSex().getValue());
             }
 
-            // Address
-            if (pid.getPatientAddress(0) != null) {
-                Address address = new Address();
-                address.setRegion(pid.getPatientAddress(0).getCity().getValue());
+            XAD permanentAddress = Arrays.stream(pid.getPatientAddress()).filter(c -> "H".equals(c.getAddressType().getValue())).findFirst().orElse(null);
+            XAD residentialAddress = Arrays.stream(pid.getPatientAddress()).filter(c -> "C".equals(c.getAddressType().getValue())).findFirst().orElse(null);
+            XAD birthAddress = Arrays.stream(pid.getPatientAddress()).filter(c -> "BR".equals(c.getAddressType().getValue())).findFirst().orElse(null);
 
-                // parse the other designation parts
-                if (pid.getPatientAddress(0).getOtherDesignation().getValue() != null) {
-                    String[] designation = pid.getPatientAddress(0).getOtherDesignation().getValue().split("\\*");
-                    address.setCouncil(designation[0]);
-                    address.setWard(designation[1]);
-                    address.setVillage(designation[2]);
-                }
-
-                emrRequest.setPermanentAddress(address);
+            if (permanentAddress != null) {
+                emrRequest.setPermanentAddress(mapAddress(permanentAddress));
             }
+
+            if (residentialAddress != null) {
+                emrRequest.setResidentialAddress(mapAddress(residentialAddress));
+            }
+
+            if (birthAddress != null) {
+                emrRequest.setPlaceOfBirth(mapAddress(birthAddress));
+            }
+
 
             // Date of Birth
             if (pid.getDateTimeOfBirth() != null) {
@@ -159,6 +154,10 @@ public class HL7v2MessageBuilderUtils {
                 emrRequest.setOtherName(pid.getPatientAlias(0).getGivenName().getValue());
             }
 
+            // set the home phone number
+            if (pid.getPhoneNumberHome(0).getXtn5_CountryCode().getValue() != null && pid.getPhoneNumberHome(0).getXtn7_LocalNumber().getValue() != null) {
+                emrRequest.setPhoneNumber(pid.getPhoneNumberHome(0).getXtn5_CountryCode().getValue() + pid.getPhoneNumberHome(0).getXtn7_LocalNumber().getValue());
+            }
 
             // set the national id
             emrRequest.getIds().addAll(Arrays.stream(pid.getCitizenship()).map(c -> new PatientId(NATIONAL_ID, c.getIdentifier().getValue())).collect(Collectors.toList()));
@@ -222,6 +221,28 @@ public class HL7v2MessageBuilderUtils {
         ack.getMSA().getMsa1_AcknowledgmentCode().setValue(successfulResponse ? "AA" : "AE");
 
         return ack;
+    }
+
+    /**
+     * Maps an address.
+     *
+     * @param xad The address to map.
+     * @return Returns the mapped address.
+     */
+    private static Address mapAddress(XAD xad) {
+        Address address = new Address();
+
+        address.setRegion(xad.getCity().getValue());
+
+        // parse the other designation parts
+        if (xad.getOtherDesignation().getValue() != null) {
+            String[] designation = xad.getOtherDesignation().getValue().split("\\*");
+            address.setCouncil(designation[0]);
+            address.setWard(designation[1]);
+            address.setVillage(designation[2]);
+        }
+
+        return address;
     }
 
     /**

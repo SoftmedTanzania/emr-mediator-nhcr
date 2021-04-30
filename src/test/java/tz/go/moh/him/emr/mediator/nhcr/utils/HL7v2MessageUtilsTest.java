@@ -6,6 +6,7 @@ import org.junit.Test;
 import tz.go.moh.him.emr.mediator.nhcr.domain.EmrRequest;
 import tz.go.moh.him.emr.mediator.nhcr.hl7v2.v25.message.ZXT_A39;
 import tz.go.moh.him.mediator.core.exceptions.ArgumentNullException;
+import tz.go.moh.him.mediator.core.serialization.JsonSerializer;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -63,6 +64,20 @@ public class HL7v2MessageUtilsTest {
         Assert.assertEquals("c", actual.getPermanentAddress().getCouncil());
         Assert.assertEquals("w", actual.getPermanentAddress().getWard());
         Assert.assertEquals("v", actual.getPermanentAddress().getVillage());
+
+        Assert.assertNotNull(actual.getMergedRecords());
+        Assert.assertEquals(2, actual.getMergedRecords().size());
+
+        Assert.assertEquals(4, actual.getIds().size());
+
+        Assert.assertTrue(actual.getIds().stream().anyMatch(c -> c.getType().equals("NATIONAL_ID")));
+        Assert.assertTrue(actual.getIds().stream().anyMatch(c -> c.getType().equals("VOTERS_ID")));
+        Assert.assertTrue(actual.getIds().stream().anyMatch(c -> c.getType().equals("RITA_ID")));
+        Assert.assertTrue(actual.getIds().stream().anyMatch(c -> c.getType().equals("DRIVERS_LICENSE_ID")));
+
+        Assert.assertEquals("+2559841534651", actual.getPhoneNumber());
+
+        System.out.println(new JsonSerializer().serializeToString(actual));
     }
 
     /**

@@ -6,7 +6,7 @@ import ca.uhn.hl7v2.model.Group;
 import ca.uhn.hl7v2.model.Type;
 import ca.uhn.hl7v2.model.v25.datatype.ST;
 import ca.uhn.hl7v2.parser.ModelClassFactory;
-import tz.go.moh.him.emr.mediator.nhcr.hl7v2.v25.datatype.RitaID;
+import tz.go.moh.him.emr.mediator.nhcr.hl7v2.v25.datatype.RitaId;
 
 /**
  * Represents a custom Z segment.
@@ -42,7 +42,7 @@ public class ZXT extends AbstractSegment {
              * * http://hl7api.sourceforge.net/base/apidocs/ca/uhn/hl7v2/model/AbstractSegment.html#add%28java.lang.Class,%20boolean,%20int,%20int,%20java.lang.Object[],%20java.lang.String%29
              */
             add(ST.class, true, 0, 100, new Object[]{getMessage()}, "Voter's ID");
-            add(RitaID.class, false, 1, 256, new Object[]{getMessage()}, "Rita ID");
+            add(RitaId.class, false, 1, 256, new Object[]{getMessage()}, "Rita ID");
         } catch (HL7Exception e) {
             log.error("Unexpected error creating ZXT - this is probably a bug in the source code generator.", e);
         }
@@ -70,7 +70,7 @@ public class ZXT extends AbstractSegment {
      *
      * @return Returns the Rita id.
      */
-    public RitaID getRitaId() {
+    public RitaId getRitaId() {
         return this.getTypedField(2, 0);
     }
 }

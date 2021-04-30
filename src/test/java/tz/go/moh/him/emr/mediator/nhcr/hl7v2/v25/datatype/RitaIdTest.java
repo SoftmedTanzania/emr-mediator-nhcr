@@ -10,7 +10,7 @@ import tz.go.moh.him.emr.mediator.nhcr.utils.TestUtils;
 import java.io.IOException;
 
 /**
- * Contains test for the {@link RitaID} class.
+ * Contains test for the {@link RitaId} class.
  */
 public class RitaIdTest {
 
@@ -26,7 +26,7 @@ public class RitaIdTest {
 
         Assert.assertNotNull(a39);
 
-        RitaID ritaID = new RitaID(a39);
+        RitaId ritaID = new RitaId(a39);
 
         Assert.assertNotNull(ritaID);
     }

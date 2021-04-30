@@ -10,7 +10,7 @@ import ca.uhn.hl7v2.model.v25.datatype.ST;
 /**
  * Represents a Rita ID.
  */
-public class RitaID extends AbstractComposite {
+public class RitaId extends AbstractComposite {
 
     /**
      * The data.
@@ -18,11 +18,11 @@ public class RitaID extends AbstractComposite {
     private Type[] data;
 
     /**
-     * Initializes a new instance of the {@link RitaID} class.
+     * Initializes a new instance of the {@link RitaId} class.
      *
      * @param message The message.
      */
-    public RitaID(Message message) {
+    public RitaId(Message message) {
         super(message);
         this.init();
     }

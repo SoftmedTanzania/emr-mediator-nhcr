@@ -98,24 +98,22 @@ public class DefaultOrchestrator extends MLLPConnector {
             List<Pair<String, String>> parameters = new ArrayList<>();
 
             // parse message
-            ZXT_A39 a40 = HL7v2MessageBuilderUtils.parseZxtA39(request.getBody());
+            ZXT_A39 a39 = HL7v2MessageBuilderUtils.parseZxtA39(request.getBody());
 
             JsonSerializer serializer = new JsonSerializer();
 
             // build the EMR message
-            EmrRequest emrRequest = HL7v2MessageBuilderUtils.convertToEmrMessage(a40);
+            EmrRequest emrRequest = HL7v2MessageBuilderUtils.convertToEmrMessage(a39);
 
-            String url = a40.getSFT(0).getSft1_SoftwareVendorOrganization().getXon1_OrganizationName().getValue();
-            String username = a40.getSFT(0).getSft3_SoftwareProductName().getValue();
-            String password = a40.getSFT(0).getSft5_SoftwareProductInformation().getValue();
+            String url = a39.getSFT(0).getSft1_SoftwareVendorOrganization().getXon1_OrganizationName().getValue();
+            String username = a39.getSFT(0).getSft3_SoftwareProductName().getValue();
+            String password = a39.getSFT(0).getSft5_SoftwareProductInformation().getValue();
 
             byte[] encodedAuth = Base64.encodeBase64((username + ":" + password).getBytes(StandardCharsets.ISO_8859_1));
             String authHeader = "Basic " + new String(encodedAuth);
 
             headers.put(HttpHeaders.AUTHORIZATION, authHeader);
-            headers.put("X-Request-Id", a40.getMSH().getMessageControlID().getValue());
-
-//            host = scheme + "://" + host + ":" + port + path;
+            headers.put("X-Request-Id", a39.getMSH().getMessageControlID().getValue());
 
             MediatorHTTPRequest requestToEmr = new MediatorHTTPRequest(workingRequest.getRequestHandler(), getSelf(), url, "POST", url, serializer.serializeToString(emrRequest), headers, parameters);
 
@@ -129,7 +127,7 @@ public class DefaultOrchestrator extends MLLPConnector {
 
             MllpUtils.sendMessage(ack, config, new DefaultHapiContext(), null);
 
-            log.error("Unable to process incoming request: %s", ExceptionUtils.getStackTrace(e));
+            log.error("Unable to process incoming request: " + ExceptionUtils.getStackTrace(e));
         }
     }
 
