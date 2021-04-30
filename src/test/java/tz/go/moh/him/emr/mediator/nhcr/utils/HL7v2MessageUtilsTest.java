@@ -67,8 +67,6 @@ public class HL7v2MessageUtilsTest {
     public void testParseZxtA39() throws IOException, HL7Exception {
         String message = TestUtils.getHL7TestMessage().replaceAll("\\n", "\r");
 
-        System.out.println(message);
-
         ZXT_A39 a39 = HL7v2MessageBuilderUtils.parseZxtA39(message);
 
         Assert.assertEquals("12341", a39.getZXT().getRitaId().getId().getValue());
@@ -89,32 +87,7 @@ public class HL7v2MessageUtilsTest {
         Assert.assertEquals("username", a39.getSFT().getSft3_SoftwareProductName().getValue());
         Assert.assertEquals("binary id", a39.getSFT().getSft4_SoftwareBinaryID().getValue());
         Assert.assertEquals("password", a39.getSFT().getSft5_SoftwareProductInformation().getValue());
-
-        Assert.assertNotNull(a39);
     }
-//
-//    @Test
-//    public void testAdtA39() throws IOException, HL7Exception {
-//
-//        String message = TestUtils.getStandardHL7TestMessage();
-//
-//        System.out.println(message);
-//
-//        ADT_A39 a39 = HL7v2MessageBuilderUtils.parseAdtA39(message);
-//
-//        Assert.assertEquals("NHCR", a39.getMSH().getMsh3_SendingApplication().getNamespaceID().getValue());
-//        Assert.assertEquals("NHCR", a39.getMSH().getMsh4_SendingFacility().getNamespaceID().getValue());
-//        Assert.assertEquals("CTC", a39.getMSH().getMsh5_ReceivingApplication().getNamespaceID().getValue());
-//        Assert.assertEquals("HIM", a39.getMSH().getMsh6_ReceivingFacility().getNamespaceID().getValue());
-//
-//        Assert.assertEquals("A40", a39.getEVN().getEventTypeCode().getValue());
-//
-//        Assert.assertEquals("https://example.com", a39.getSFT().getSft1_SoftwareVendorOrganization().getOrganizationName().getValue());
-//        Assert.assertEquals("1.4", a39.getSFT().getSft2_SoftwareCertifiedVersionOrReleaseNumber().getValue());
-//        Assert.assertEquals("username", a39.getSFT().getSft3_SoftwareProductName().getValue());
-//        Assert.assertEquals("binary id", a39.getSFT().getSft4_SoftwareBinaryID().getValue());
-//        Assert.assertEquals("password", a39.getSFT().getSft5_SoftwareProductInformation().getValue());
-//    }
 
     /**
      * Test the parsing of an ZXT_A39 message.
@@ -129,7 +102,7 @@ public class HL7v2MessageUtilsTest {
      */
     @Test(expected = HL7Exception.class)
     public void testParseZxtA39InvalidMessage() throws HL7Exception {
-        HL7v2MessageBuilderUtils.parseZxtA39("MSH|^~\\&|NHCR|NHCR|CTC|HIM|20210210103700|");
+        HL7v2MessageBuilderUtils.parseZxtA39("MSH|^~\\&|NHCR|NHCR|CTC|HIM|20210210103700|\r");
     }
 
     /**
