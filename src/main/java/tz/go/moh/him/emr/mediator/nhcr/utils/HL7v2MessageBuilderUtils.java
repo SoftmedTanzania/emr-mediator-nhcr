@@ -7,6 +7,7 @@ import ca.uhn.hl7v2.model.v25.message.ACK;
 import ca.uhn.hl7v2.model.v25.message.ADT_A39;
 import ca.uhn.hl7v2.model.v25.segment.MRG;
 import ca.uhn.hl7v2.model.v25.segment.PID;
+import ca.uhn.hl7v2.parser.CustomModelClassFactory;
 import ca.uhn.hl7v2.parser.Parser;
 import tz.go.moh.him.emr.mediator.nhcr.domain.*;
 import tz.go.moh.him.emr.mediator.nhcr.hl7v2.v25.message.ZXT_A39;
@@ -248,6 +249,8 @@ public class HL7v2MessageBuilderUtils {
 
         HapiContext context = new DefaultHapiContext();
         Parser parser = context.getPipeParser();
+
+        context.setModelClassFactory(new CustomModelClassFactory("tz.go.moh.him.emr.mediator.nhcr.hl7v2"));
 
         // fix MSH-10
         message = message.replace("ADT^A40^ADT_A40", "ZXT^A39^ZXT_A39");
