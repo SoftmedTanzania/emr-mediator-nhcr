@@ -13,6 +13,8 @@ import tz.go.moh.him.emr.mediator.nhcr.hl7v2.v25.message.ZXT_A39;
 import tz.go.moh.him.mediator.core.exceptions.ArgumentNullException;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -20,6 +22,16 @@ import java.util.stream.Collectors;
  * Represents an HL7v2 message builder utility.
  */
 public class HL7v2MessageBuilderUtils {
+
+    /**
+     * The EMR date format.
+     */
+    private static final SimpleDateFormat EMR_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+
+    /**
+     * The NHCR date format.
+     */
+    private static final SimpleDateFormat NHCR_DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
 
     /**
      * The national id.
@@ -47,7 +59,7 @@ public class HL7v2MessageBuilderUtils {
      * @param a40 The HL7v2 message.
      * @return Returns the converted {@link EmrRequest}.
      */
-    public static EmrRequest convertToEmrMessage(ZXT_A39 a40) {
+    public static EmrRequest convertToEmrMessage(ZXT_A39 a40) throws ParseException {
         EmrRequest emrRequest = new EmrRequest();
 
         // assume PUT
@@ -134,7 +146,9 @@ public class HL7v2MessageBuilderUtils {
 
             // Date of Birth
             if (pid.getDateTimeOfBirth() != null) {
-                emrRequest.setDateOfBirth(pid.getDateTimeOfBirth().getTime().getValue());
+
+                // HACK: parse and re-format the date into the date format the EMR is expecting
+                emrRequest.setDateOfBirth(EMR_DATE_FORMAT.format(NHCR_DATE_FORMAT.parse(pid.getDateTimeOfBirth().getTime().getValue())));
             }
 
             // set the uln
