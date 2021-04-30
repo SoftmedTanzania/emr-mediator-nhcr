@@ -57,10 +57,10 @@ public class HL7v2MessageBuilderUtils {
     /**
      * Converts an {@link ZXT_A39} instance to an {@link EmrRequest} instance.
      *
-     * @param a40 The HL7v2 message.
+     * @param a39 The HL7v2 message.
      * @return Returns the converted {@link EmrRequest}.
      */
-    public static EmrRequest convertToEmrMessage(ZXT_A39 a40) throws ParseException {
+    public static EmrRequest convertToEmrMessage(ZXT_A39 a39) throws ParseException {
         EmrRequest emrRequest = new EmrRequest();
 
         // assume PUT
@@ -68,13 +68,13 @@ public class HL7v2MessageBuilderUtils {
         // hence UPDATE
         emrRequest.setPostOrUpdate("U");
 
-        int reps = a40.getPATIENTReps();
+        int reps = a39.getPATIENTReps();
 
         for (int i = 0; i < reps; i++) {
-            PID pid = a40.getPATIENT(i).getPID();
+            PID pid = a39.getPATIENT(i).getPID();
 
             // get the merge ids
-            MRG mrg = a40.getPATIENT(i).getMRG();
+            MRG mrg = a39.getPATIENT(i).getMRG();
 
             // build a list of ids from the MRG segment
             List<String> mergeIds = Arrays.stream(mrg.getMrg1_PriorPatientIdentifierList()).map(c -> {
@@ -163,21 +163,21 @@ public class HL7v2MessageBuilderUtils {
             emrRequest.getIds().addAll(Arrays.stream(pid.getCitizenship()).map(c -> new PatientId(NATIONAL_ID, c.getIdentifier().getValue())).collect(Collectors.toList()));
 
             // set the voters id
-            emrRequest.getIds().add(new PatientId(VOTERS_ID, a40.getZXT().getVotersId().getValue()));
+            emrRequest.getIds().add(new PatientId(VOTERS_ID, a39.getZXT().getVotersId().getValue()));
 
             // set the drivers license id
             emrRequest.getIds().add(new PatientId(DRIVERS_LICENSE_ID, pid.getDriverSLicenseNumberPatient().getDln1_LicenseNumber().getValue()));
 
             // set the rita id
-            emrRequest.getIds().add(new PatientId(RITA_ID, a40.getZXT().getRitaId().getId().getValue()));
+            emrRequest.getIds().add(new PatientId(RITA_ID, a39.getZXT().getRitaId().getId().getValue()));
 
             // set the insurance id
             InsuranceId insuranceId = new InsuranceId();
 
-            insuranceId.setId(a40.getIN1().getIn11_SetIDIN1().getValue());
+            insuranceId.setId(a39.getIN1().getIn11_SetIDIN1().getValue());
 
-            if (a40.getIN1().getIn14_InsuranceCompanyName(0) != null) {
-                insuranceId.setName(a40.getIN1().getIn14_InsuranceCompanyName(0).getOrganizationName().getValue());
+            if (a39.getIN1().getIn14_InsuranceCompanyName(0) != null) {
+                insuranceId.setName(a39.getIN1().getIn14_InsuranceCompanyName(0).getOrganizationName().getValue());
             }
 
             emrRequest.setInsuranceId(insuranceId);
