@@ -81,7 +81,8 @@ public class HL7v2MessageUtilsTest {
         Assert.assertEquals("nisha@1", actual.getProgramIds().get(0).getAssigningFacility());
         Assert.assertEquals("nisha@1", actual.getProgramIds().get(0).getId());
 
-        Assert.assertEquals("+2559841534651", actual.getPhoneNumber());
+        Assert.assertEquals("+255", actual.getCountryCode());
+        Assert.assertEquals("9841534651", actual.getPhoneNumber());
 
         System.out.println(new JsonSerializer().serializeToString(actual));
     }

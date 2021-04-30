@@ -138,10 +138,8 @@ public class HL7v2MessageBuilderUtils {
                 emrRequest.setPlaceOfBirth(mapAddress(birthAddress));
             }
 
-
             // Date of Birth
             if (pid.getDateTimeOfBirth() != null) {
-
                 // HACK: parse and re-format the date into the date format the EMR is expecting
                 emrRequest.setDateOfBirth(EMR_DATE_FORMAT.format(NHCR_DATE_FORMAT.parse(pid.getDateTimeOfBirth().getTime().getValue())));
             }
@@ -154,10 +152,9 @@ public class HL7v2MessageBuilderUtils {
                 emrRequest.setOtherName(pid.getPatientAlias(0).getGivenName().getValue());
             }
 
-            // set the home phone number
-            if (pid.getPhoneNumberHome(0).getXtn5_CountryCode().getValue() != null && pid.getPhoneNumberHome(0).getXtn7_LocalNumber().getValue() != null) {
-                emrRequest.setPhoneNumber(pid.getPhoneNumberHome(0).getXtn5_CountryCode().getValue() + pid.getPhoneNumberHome(0).getXtn7_LocalNumber().getValue());
-            }
+            // set the phone country code and phone number
+            emrRequest.setCountryCode(pid.getPhoneNumberHome(0).getXtn5_CountryCode().getValue());
+            emrRequest.setPhoneNumber(pid.getPhoneNumberHome(0).getXtn7_LocalNumber().getValue());
 
             // set the national id
             emrRequest.getIds().addAll(Arrays.stream(pid.getCitizenship()).map(c -> new PatientId(NATIONAL_ID, c.getIdentifier().getValue())).collect(Collectors.toList()));
