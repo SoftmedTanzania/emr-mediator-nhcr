@@ -33,8 +33,8 @@ public class PatientId {
      */
     public PatientId(String type, String id) {
         this();
-        this.type = type;
-        this.id = id;
+        this.setType(type);
+        this.setId(id);
     }
 
     /**

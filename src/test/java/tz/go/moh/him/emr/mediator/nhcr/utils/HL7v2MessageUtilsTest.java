@@ -75,6 +75,12 @@ public class HL7v2MessageUtilsTest {
         Assert.assertTrue(actual.getIds().stream().anyMatch(c -> c.getType().equals("RITA_ID")));
         Assert.assertTrue(actual.getIds().stream().anyMatch(c -> c.getType().equals("DRIVERS_LICENSE_ID")));
 
+        Assert.assertEquals(1, actual.getProgramIds().size());
+
+        Assert.assertEquals("CTC", actual.getProgramIds().get(0).getAssigningAuthority());
+        Assert.assertEquals("nisha@1", actual.getProgramIds().get(0).getAssigningFacility());
+        Assert.assertEquals("nisha@1", actual.getProgramIds().get(0).getId());
+
         Assert.assertEquals("+2559841534651", actual.getPhoneNumber());
 
         System.out.println(new JsonSerializer().serializeToString(actual));
