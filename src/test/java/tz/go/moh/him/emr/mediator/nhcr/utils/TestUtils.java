@@ -24,4 +24,12 @@ public class TestUtils {
 
         return IOUtils.toString(stream);
     }
+
+    public static String getStandardHL7TestMessage() throws IOException {
+        InputStream stream = HL7v2MessageUtilsTest.class.getClassLoader().getResourceAsStream("ADT_A39.hl7");
+
+        Assert.assertNotNull(stream);
+
+        return IOUtils.toString(stream);
+    }
 }

@@ -4,6 +4,7 @@ import ca.uhn.hl7v2.DefaultHapiContext;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.HapiContext;
 import ca.uhn.hl7v2.model.v25.message.ACK;
+import ca.uhn.hl7v2.model.v25.message.ADT_A39;
 import ca.uhn.hl7v2.model.v25.segment.MRG;
 import ca.uhn.hl7v2.model.v25.segment.PID;
 import ca.uhn.hl7v2.parser.Parser;
@@ -207,6 +208,30 @@ public class HL7v2MessageBuilderUtils {
         ack.getMSA().getMsa1_AcknowledgmentCode().setValue(successfulResponse ? "AA" : "AE");
 
         return ack;
+    }
+
+    /**
+     * Parses an HL7v2 message.
+     *
+     * @param message The message to parse.
+     * @return Returns the parsed message.
+     * @throws HL7Exception if an HL7 exception occurs
+     */
+    public static ADT_A39 parseAdtA39(String message) throws HL7Exception {
+        if (message == null || "".equals(message)) {
+            throw new ArgumentNullException("message - Value cannot be null");
+        }
+
+        HapiContext context = new DefaultHapiContext();
+        Parser parser = context.getPipeParser();
+
+        // fix MSH-10
+        message = message.replace("ADT^A40^ADT_A40", "ADT^A39^ADT_A39");
+
+        // fix MSH-12
+        message = message.replace("|2.3.1|", "|2.5|");
+
+        return (ADT_A39) parser.parse(message);
     }
 
     /**
