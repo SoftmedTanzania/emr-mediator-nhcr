@@ -32,7 +32,7 @@ public class HL7v2MessageUtilsTest {
      */
     @Test
     public void testConvertToEmrMessage() throws IOException, HL7Exception {
-        String message = TestUtils.getHL7TestMessage();
+        String message = TestUtils.getHL7TestMessage().replaceAll("\\n", "\r");
 
         ZXT_A39 a39 = HL7v2MessageBuilderUtils.parseZxtA39(message);
 
@@ -55,8 +55,6 @@ public class HL7v2MessageUtilsTest {
 
         JsonSerializer serializer = new JsonSerializer();
         System.out.println(serializer.serializeToString(actual));
-
-//        Assert.assertEquals("", actual.);
     }
 
     /**
@@ -93,79 +91,30 @@ public class HL7v2MessageUtilsTest {
         Assert.assertEquals("password", a39.getSFT().getSft5_SoftwareProductInformation().getValue());
 
         Assert.assertNotNull(a39);
-
-//        ZXT_A39 zxtA39 = new ZXT_A39();
-//
-//        zxtA39.initQuickstart("ZXT", "A39", "P");
-//
-//        zxtA39.getMSH().getMsh3_SendingApplication().getNamespaceID().setValue("sending application");
-//        zxtA39.getMSH().getMsh4_SendingFacility().getNamespaceID().setValue("sending facility");
-//        zxtA39.getMSH().getMsh5_ReceivingApplication().getNamespaceID().setValue("receiving application");
-//        zxtA39.getMSH().getMsh6_ReceivingFacility().getNamespaceID().setValue("receiving facility");
-//        zxtA39.getMSH().getMsh7_DateTimeOfMessage().getTime().setValue(Calendar.getInstance());
-//        zxtA39.getMSH().getMsh10_MessageControlID().setValue(UUID.randomUUID().toString());
-//        zxtA39.getMSH().getMsh12_VersionID().getVersionID().setValue("2.5");
-//
-//        zxtA39.getSFT().getSft1_SoftwareVendorOrganization().getOrganizationName().setValue("https://example.com");
-//        zxtA39.getSFT().getSft2_SoftwareCertifiedVersionOrReleaseNumber().setValue("1.4");
-//        zxtA39.getSFT().getSft3_SoftwareProductName().setValue("username");
-//        zxtA39.getSFT().getSft4_SoftwareBinaryID().setValue("binary id");
-//        zxtA39.getSFT().getSft5_SoftwareProductInformation().setValue("password");
-//
-//        Assert.assertEquals("https://example.com", zxtA39.getSFT().getSft1_SoftwareVendorOrganization().getOrganizationName().getValue());
-//        Assert.assertEquals("1.4", zxtA39.getSFT().getSft2_SoftwareCertifiedVersionOrReleaseNumber().getValue());
-//        Assert.assertEquals("username", zxtA39.getSFT().getSft3_SoftwareProductName().getValue());
-//        Assert.assertEquals("binary id", zxtA39.getSFT().getSft4_SoftwareBinaryID().getValue());
-//        Assert.assertEquals("password", zxtA39.getSFT().getSft5_SoftwareProductInformation().getValue());
-//
-//        zxtA39.getZXT().getRitaId().getId().setValue("12341");
-//        zxtA39.getZXT().getVotersId().setValue("12342");
-//        zxtA39.getZXT().getRitaId().getIdType().setValue("BTH_CRT");
-//        zxtA39.getZXT().getRitaId().getCountryName().setValue("Tanzania");
-//        zxtA39.getZXT().getRitaId().getCountryCode().setValue("TZA");
-
-//        HapiContext context = new DefaultHapiContext();
-//        context.setModelClassFactory(new CustomModelClassFactory("tz.go.moh.him.emr.mediator.nhcr.hl7v2"));
-//
-//        PipeParser parser = context.getPipeParser();
-
-//        String encoded = parser.encode(zxtA39);
-
-//        System.out.println(encoded);
-//        String encoded = zxtA39.encode();
-//        System.out.println(encoded);
-
-//        ZXT_A39 test = HL7v2MessageBuilderUtils.parseZxtA39(encoded);
-//
-//        Assert.assertEquals("12341", test.getZXT().getRitaId().getId().getValue());
-//        Assert.assertEquals("12342", test.getZXT().getVotersId().getValue());
-//        Assert.assertEquals("BTH_CRT", test.getZXT().getRitaId().getIdType().getValue());
-//        Assert.assertEquals("Tanzania", test.getZXT().getRitaId().getCountryName().getValue());
-//        Assert.assertEquals("TZA", test.getZXT().getRitaId().getCountryCode().getValue());
     }
-
-    @Test
-    public void testAdtA39() throws IOException, HL7Exception {
-
-        String message = TestUtils.getStandardHL7TestMessage();
-
-        System.out.println(message);
-
-        ADT_A39 a39 = HL7v2MessageBuilderUtils.parseAdtA39(message);
-
-        Assert.assertEquals("NHCR", a39.getMSH().getMsh3_SendingApplication().getNamespaceID().getValue());
-        Assert.assertEquals("NHCR", a39.getMSH().getMsh4_SendingFacility().getNamespaceID().getValue());
-        Assert.assertEquals("CTC", a39.getMSH().getMsh5_ReceivingApplication().getNamespaceID().getValue());
-        Assert.assertEquals("HIM", a39.getMSH().getMsh6_ReceivingFacility().getNamespaceID().getValue());
-
-        Assert.assertEquals("A40", a39.getEVN().getEventTypeCode().getValue());
-
-        Assert.assertEquals("https://example.com", a39.getSFT().getSft1_SoftwareVendorOrganization().getOrganizationName().getValue());
-        Assert.assertEquals("1.4", a39.getSFT().getSft2_SoftwareCertifiedVersionOrReleaseNumber().getValue());
-        Assert.assertEquals("username", a39.getSFT().getSft3_SoftwareProductName().getValue());
-        Assert.assertEquals("binary id", a39.getSFT().getSft4_SoftwareBinaryID().getValue());
-        Assert.assertEquals("password", a39.getSFT().getSft5_SoftwareProductInformation().getValue());
-    }
+//
+//    @Test
+//    public void testAdtA39() throws IOException, HL7Exception {
+//
+//        String message = TestUtils.getStandardHL7TestMessage();
+//
+//        System.out.println(message);
+//
+//        ADT_A39 a39 = HL7v2MessageBuilderUtils.parseAdtA39(message);
+//
+//        Assert.assertEquals("NHCR", a39.getMSH().getMsh3_SendingApplication().getNamespaceID().getValue());
+//        Assert.assertEquals("NHCR", a39.getMSH().getMsh4_SendingFacility().getNamespaceID().getValue());
+//        Assert.assertEquals("CTC", a39.getMSH().getMsh5_ReceivingApplication().getNamespaceID().getValue());
+//        Assert.assertEquals("HIM", a39.getMSH().getMsh6_ReceivingFacility().getNamespaceID().getValue());
+//
+//        Assert.assertEquals("A40", a39.getEVN().getEventTypeCode().getValue());
+//
+//        Assert.assertEquals("https://example.com", a39.getSFT().getSft1_SoftwareVendorOrganization().getOrganizationName().getValue());
+//        Assert.assertEquals("1.4", a39.getSFT().getSft2_SoftwareCertifiedVersionOrReleaseNumber().getValue());
+//        Assert.assertEquals("username", a39.getSFT().getSft3_SoftwareProductName().getValue());
+//        Assert.assertEquals("binary id", a39.getSFT().getSft4_SoftwareBinaryID().getValue());
+//        Assert.assertEquals("password", a39.getSFT().getSft5_SoftwareProductInformation().getValue());
+//    }
 
     /**
      * Test the parsing of an ZXT_A39 message.
