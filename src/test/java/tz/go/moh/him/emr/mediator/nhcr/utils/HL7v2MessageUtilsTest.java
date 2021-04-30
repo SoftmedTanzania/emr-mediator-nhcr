@@ -67,7 +67,7 @@ public class HL7v2MessageUtilsTest {
      */
     @Test
     public void testParseZxtA39() throws IOException, HL7Exception {
-        String message = TestUtils.getHL7TestMessage();
+        String message = TestUtils.getHL7TestMessage().replaceAll("\\n", "\r");
 
         System.out.println(message);
 
