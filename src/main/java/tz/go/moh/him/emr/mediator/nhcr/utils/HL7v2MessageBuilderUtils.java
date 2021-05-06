@@ -59,6 +59,7 @@ public class HL7v2MessageBuilderUtils {
      *
      * @param a39 The HL7v2 message.
      * @return Returns the converted {@link EmrRequest}.
+     * @throws ParseException if a parse exception is thrown
      */
     public static EmrRequest convertToEmrMessage(ZXT_A39 a39) throws ParseException {
         EmrRequest emrRequest = new EmrRequest();
