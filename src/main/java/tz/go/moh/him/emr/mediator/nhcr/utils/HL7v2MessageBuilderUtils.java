@@ -158,7 +158,10 @@ public class HL7v2MessageBuilderUtils {
             emrRequest.setPhoneNumber(pid.getPhoneNumberHome(0).getXtn7_LocalNumber().getValue());
 
             // set the national id
-            emrRequest.getIds().addAll(Arrays.stream(pid.getCitizenship()).map(c -> new PatientId(NATIONAL_ID, c.getIdentifier().getValue())).collect(Collectors.toList()));
+//            emrRequest.getIds().addAll(Arrays.stream(pid.getNationality().getIdentifier().getValue()).map(c -> new PatientId(NATIONAL_ID, c.getIdentifier().getValue())).collect(Collectors.toList()));
+
+            // set the national id
+            emrRequest.getIds().add(new PatientId(NATIONAL_ID, pid.getNationality().getIdentifier().getValue()));
 
             // set the voters id
             emrRequest.getIds().add(new PatientId(VOTERS_ID, a39.getZXT().getVotersId().getValue()));
