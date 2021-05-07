@@ -2,7 +2,7 @@
   "urn": "urn:uuid:4ef307a0-a114-11eb-83c5-cd3414c149f3",
   "version": "0.1.0",
   "name": "EMR Mediator NHCR",
-  "description": "An OpenHIM mediator to handle data sharing between NHCR and EMR",
+  "description": "A mediator to handle data sharing between the NHCR and EMR systems",
   "endpoints": [
     {
       "name": "EMR Mediator NHCR Route",
@@ -15,6 +15,7 @@
     {
       "name": "EMR Mediator NHCR",
       "type": "tcp",
+      "urlPattern": "_tcp",
       "allow": ["emr-mediator-nhcr"],
       "routes": [
         {
