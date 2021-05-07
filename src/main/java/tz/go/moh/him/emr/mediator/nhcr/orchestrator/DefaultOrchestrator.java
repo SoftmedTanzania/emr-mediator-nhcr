@@ -113,7 +113,7 @@ public class DefaultOrchestrator extends MLLPConnector {
             String authHeader = "Basic " + new String(encodedAuth);
 
             headers.put(HttpHeaders.AUTHORIZATION, authHeader);
-            headers.put("X-Request-Id", a39.getMSH().getMessageControlID().getValue());
+//            headers.put("X-Request-Id", a39.getMSH().getMessageControlID().getValue());
 
             MediatorHTTPRequest requestToEmr = new MediatorHTTPRequest(workingRequest.getRequestHandler(), getSelf(), url, "POST", url, serializer.serializeToString(emrRequest), headers, parameters);
 
@@ -148,6 +148,10 @@ public class DefaultOrchestrator extends MLLPConnector {
             success = response.getStatusCode() >= 200 && response.getStatusCode() <= 299;
 
             String originalRequestId = response.getHeaders().get("X-Request-Id");
+
+            if (originalRequestId == null || "".equals(originalRequestId)) {
+                originalRequestId = UUID.randomUUID().toString();
+            }
 
             ack = HL7v2MessageBuilderUtils.createAck(originalRequestId, success);
 
