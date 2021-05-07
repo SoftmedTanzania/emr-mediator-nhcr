@@ -113,7 +113,6 @@ public class DefaultOrchestrator extends MLLPConnector {
             String authHeader = "Basic " + new String(encodedAuth);
 
             headers.put(HttpHeaders.AUTHORIZATION, authHeader);
-//            headers.put("X-Request-Id", a39.getMSH().getMessageControlID().getValue());
 
             MediatorHTTPRequest requestToEmr = new MediatorHTTPRequest(workingRequest.getRequestHandler(), getSelf(), url, "POST", url, serializer.serializeToString(emrRequest), headers, parameters);
 
@@ -142,23 +141,20 @@ public class DefaultOrchestrator extends MLLPConnector {
         ACK ack = null;
         boolean success = false;
 
+        // get MSH-10 from the original request to respond back to the NHCR
+        String msh10 = HL7v2MessageBuilderUtils.parseZxtA39(workingRequest.getBody()).getMSH().getMessageControlID().getValue();
+
         try {
             // if the response status code is in the success status range
             // we can consider the response from the destination system a success
             success = response.getStatusCode() >= 200 && response.getStatusCode() <= 299;
 
-            String originalRequestId = response.getHeaders().get("X-Request-Id");
-
-            if (originalRequestId == null || "".equals(originalRequestId)) {
-                originalRequestId = UUID.randomUUID().toString();
-            }
-
-            ack = HL7v2MessageBuilderUtils.createAck(originalRequestId, success);
+            ack = HL7v2MessageBuilderUtils.createAck(msh10, success);
 
         } catch (Exception e) {
             // in the event of an exception, we need to create a generic ACK
             // and respond to the NHCR, indicating a failure
-            ack = HL7v2MessageBuilderUtils.createAck(UUID.randomUUID().toString(), success);
+            ack = HL7v2MessageBuilderUtils.createAck(msh10, success);
             log.error("Unable to process incoming response: " + ExceptionUtils.getStackTrace(e));
         } finally {
             MllpUtils.sendMessage(ack, config, new DefaultHapiContext(), null);
