@@ -2,30 +2,60 @@
   "urn": "urn:uuid:4ef307a0-a114-11eb-83c5-cd3414c149f3",
   "version": "0.1.0",
   "name": "EMR Mediator NHCR",
-  "description": "An OpenHIM mediator to handle data sharing between NHCR and EMR",
+  "description": "A mediator to handle data sharing between the NHCR and EMR systems",
   "endpoints": [
     {
       "name": "EMR Mediator NHCR Route",
       "host": "localhost",
       "port": "3026",
-      "path": "/emr",
-      "type": "http"
+      "type": "tcp"
     }
   ],
   "defaultChannelConfig": [
     {
       "name": "EMR Mediator NHCR",
-      "urlPattern": "^/emr$",
-      "type": "http",
-      "allow": ["emrmediatornhcr"],
+      "type": "tcp",
+      "urlPattern": "_tcp",
+      "allow": ["emr-mediator-nhcr"],
       "routes": [
         {
           "name": "EMR Mediator NHCR Route",
           "host": "localhost",
           "port": "3026",
-          "path": "/emr",
-          "type": "http",
+          "type": "tcp",
           "primary": "true"
+        }
+      ]
+    }
+  ],
+  "configDefs": [
+    {
+      "param": "destinationConnectionProperties",
+      "displayName": "Destination Connection Properties",
+      "description": "Configuration to set the hostname, port and path for the destination server",
+      "type": "struct",
+      "template": [
+        {
+          "param": "destinationHost",
+          "displayName": "Destination Host Name",
+          "description": "IP address/hostname of the destination server. e.g 192.168.1.1",
+          "type": "string"
+        },
+        {
+          "param": "destinationPort",
+          "displayName": "Destination Port Number",
+          "description": "The port number of the destination server. e.g 8080",
+          "type": "number"
+        },
+        {
+          "param": "destinationScheme",
+          "displayName": "Destination Scheme",
+          "description": "Whether the destination is using LLP or SLLP requests.",
+          "type": "option",
+          "values": [
+            "llp",
+            "sllp"
+          ]
         }
       ]
     }
